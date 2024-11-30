@@ -348,3 +348,196 @@ def switch_to_audio_cutter():
 def exit_app():
     if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit?"):
         gui_root.destroy()
+
+# Create main frame container
+main_frame = tk.Frame(gui_root, bg="black")
+main_frame.grid(row=0,column=1)
+button_frame = tk.Frame(gui_root, bg="black")
+button_frame.grid(row=0,column=0,pady=30,padx=20)
+
+
+
+youtube_button = tk.Button(button_frame, text="YouTube Downloader",width=20, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_youtube)
+facebook_button = tk.Button(button_frame, text="Facebook Downloader",width=20, font=("verdana", 10), bg="#3b5998", fg="#FFFFFF", activebackground="#8b9dc3", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_facebook)
+video_frame_extractor_button = tk.Button(button_frame, text="Video Frame Extractor",width=20, font=("verdana", 10), bg="#1E90FF", fg="#FFFFFF", activebackground="#87CEFA", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_video_frame_extractor)
+audio_cutter_button = tk.Button(button_frame, text="Audio Cutter", font=("verdana", 10),width=20, bg="#28a745", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_audio_cutter)
+download_audio_button = tk.Button(button_frame, text="Audio Downloader", font=("verdana", 10),width=20, bg="#003", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_audio_YouTube)
+playlist_youtube_button = tk.Button(button_frame, text="Playlist Downloader", font=("verdana", 10),width=20, bg="#003", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_playlist_youtube)
+switch_language_button = tk.Button(button_frame, text="Khmer", font=("verdana", 10),width=20, bg="#8B0000", fg="#FFFFFF", activebackground="#ff6347", activeforeground="#000000", relief=tk.GROOVE, command=switch_language)
+
+youtube_button.pack(side=tk.TOP, padx=10,pady=10)
+facebook_button.pack(side=tk.TOP, padx=10,pady=10)
+video_frame_extractor_button.pack(side=tk.TOP, padx=10,pady=10)
+audio_cutter_button.pack(side=tk.TOP, padx=10,pady=10)
+download_audio_button.pack(side=tk.TOP, padx=10,pady=10)
+playlist_youtube_button.pack(side=tk.TOP, padx=10,pady=10)
+switch_language_button.pack(side=tk.TOP, padx=10,pady=10)
+
+# Create frames for functionalities
+youtube_frame = tk.LabelFrame(main_frame, text=" YouTube ", bg="#E5E4E2")
+facebook_frame = tk.LabelFrame(main_frame, text=" Facebook ", bg="#E5E4E2", padx=10, pady=10)
+video_frame_extractor_frame = tk.LabelFrame(main_frame, text=" Video Frame Extractor ", bg="#E5E4E2", padx=10, pady=10)
+audio_cutter_frame = tk.LabelFrame(main_frame, text=" Audio Cutter ", bg="#E5E4E2", padx=10, pady=10)
+download_audio_frame = tk.LabelFrame(main_frame, text=" Audio Downloader ", bg="#E5E4E2", padx=10, pady=10)
+playlist_frame = tk.LabelFrame(main_frame, text=" Playlist YouTube ", bg="#E5E4E2", padx=10, pady=10)
+
+for frame in (youtube_frame, facebook_frame, video_frame_extractor_frame, audio_cutter_frame, download_audio_frame, playlist_frame):
+    frame.grid(row=0, column=0, sticky='nsew', padx=20, pady=37.5)
+
+# YouTube downloader widgets
+url_label = tk.Label(youtube_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+des_label = tk.Label(youtube_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+
+video_url = tk.StringVar()
+download_dir = tk.StringVar()
+
+url_field = tk.Entry(youtube_frame, textvariable=video_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+des_field = tk.Entry(youtube_frame, textvariable=download_dir, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+browse_button = tk.Button(youtube_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
+
+
+
+download_button = tk.Button(youtube_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_video)
+close_button = tk.Button(youtube_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+browse_button.grid(row=1, column=3, padx=5, pady=5)
+download_button.grid(row=2, column=1, padx=5, pady=10)
+close_button.grid(row=2, column=2, padx=5, pady=10)
+
+# Facebook downloader widgets
+fb_url_label = tk.Label(facebook_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000")
+fb_des_label = tk.Label(facebook_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000")
+
+fb_url = tk.StringVar()
+download_dir_fb = tk.StringVar()
+
+fb_url_field = tk.Entry(facebook_frame, textvariable=fb_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+fb_des_field = tk.Entry(facebook_frame, textvariable=download_dir_fb, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+browse_button_fb = tk.Button(facebook_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
+
+download_button_fb = tk.Button(facebook_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_facebook_video)
+close_button_fb = tk.Button(facebook_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+fb_url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+fb_url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+fb_des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+fb_des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+browse_button_fb.grid(row=1, column=3, padx=5, pady=5)
+download_button_fb.grid(row=2, column=1, padx=5, pady=10)
+close_button_fb.grid(row=2, column=2, padx=5, pady=10)
+
+# Playlist downloader widgets 
+playlist_label = tk.Label(playlist_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+playlist_des_label = tk.Label(playlist_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+
+playlist_url = tk.StringVar()
+download_dir_yt = tk.StringVar()
+
+playlist_field = tk.Entry(playlist_frame, textvariable=playlist_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+playlist_des_field = tk.Entry(playlist_frame, textvariable=download_dir_yt, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+browse_button_playlist = tk.Button(playlist_frame, text="Browse", width=8, font=("verdana", 10), bg="#FE9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
+
+download_button_playlist = tk.Button(playlist_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_video)
+close_button_playlist = tk.Button(playlist_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+
+
+
+playlist_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+playlist_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+playlist_des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+playlist_des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+browse_button_playlist.grid(row=1, column=3, padx=5, pady=5)
+download_button_playlist.grid(row=2, column=1, padx=5, pady=10)
+close_button_playlist.grid(row=2, column=2, padx=5, pady=10)
+
+# Video Frame Extractor widgets
+video_label = tk.Label(video_frame_extractor_frame, text="Video Path:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+timestamp_label = tk.Label(video_frame_extractor_frame, text="Timestamp (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+
+video_path = tk.StringVar()
+timestamp_entry = tk.StringVar()
+
+video_field = tk.Entry(video_frame_extractor_frame, textvariable=video_path, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+timestamp_field = tk.Entry(video_frame_extractor_frame, textvariable=timestamp_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+
+browse_video_button = tk.Button(video_frame_extractor_frame, text="Browse Video", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=lambda: video_path.set(filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4 *.avi *.mkv *.mov"), ("All Files", "*.*")])))
+extract_image_button = tk.Button(video_frame_extractor_frame, text="Extract Image", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=extract_image)
+close_image_button = tk.Button(video_frame_extractor_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+video_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+video_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+browse_video_button.grid(row=0, column=3, padx=5, pady=5)
+timestamp_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+timestamp_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+extract_image_button.grid(row=2, column=1, padx=5, pady=10)
+close_image_button.grid(row=2, column=2, padx=5, pady=10)
+
+# Audio Cutter widgets
+audio_file_label = tk.Label(audio_cutter_frame, text="Audio File:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+start_time_label = tk.Label(audio_cutter_frame, text="Start Time (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+end_time_label = tk.Label(audio_cutter_frame, text="End Time (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+save_dir_label = tk.Label(audio_cutter_frame, text="Save Directory:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+
+audio_file_field = tk.Entry(audio_cutter_frame, textvariable=audio_path, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+start_time_field = tk.Entry(audio_cutter_frame, textvariable=start_time_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+end_time_field = tk.Entry(audio_cutter_frame, textvariable=end_time_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+save_dir_field = tk.Entry(audio_cutter_frame, textvariable=audio_save_dir, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+
+browse_audio_button = tk.Button(audio_cutter_frame, text="Browse File", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=select_audio_file)
+browse_save_dir_button = tk.Button(audio_cutter_frame, text="Browse Save", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=lambda: audio_save_dir.set(filedialog.askdirectory()))
+
+
+
+cut_audio_button = tk.Button(audio_cutter_frame, text="Cut Audio", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=cut_audio)
+close_audio_button= tk.Button(audio_cutter_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+audio_file_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+audio_file_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+browse_audio_button.grid(row=0, column=3, padx=5, pady=5)
+
+start_time_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+start_time_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+end_time_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
+end_time_field.grid(row=2, column=1, padx=5, pady=5, columnspan=2)
+
+save_dir_label.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
+save_dir_field.grid(row=3, column=1, padx=5, pady=5, columnspan=2)
+browse_save_dir_button.grid(row=3, column=3, padx=5, pady=5)
+
+cut_audio_button.grid(row=4, column=1, padx=5, pady=10)
+close_audio_button.grid(row=4, column=2, padx=5, pady=10)
+
+# Status label for audio cutter
+status_label = tk.Label(audio_cutter_frame, text="", font=("verdana", 10), bg="#E5E4E2", fg="red", anchor=tk.W)
+status_label.grid(row=5, column=0, padx=5, pady=5, columnspan=3)
+
+# YouTube Audio Downloader widgets
+audio_url_label = tk.Label(download_audio_frame, text="YouTube URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+audio_url_field = tk.Entry(download_audio_frame, textvariable=video_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
+audio_browse_button = tk.Button(download_audio_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
+audio_download_button = tk.Button(download_audio_frame, text="Download Audio", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_audio)
+close_audio_download_button = tk.Button(download_audio_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
+
+audio_url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+audio_url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
+audio_browse_button.grid(row=0, column=3, padx=5, pady=5)
+audio_download_button.grid(row=1, column=1, padx=5, pady=10)
+close_audio_download_button.grid(row=1, column=2, padx=5, pady=10)
+
+
+# Progress bar for audio download
+progress_bar_label = tk.Label(download_audio_frame, text="Download Progress:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
+progress_bar = ttk.Progressbar(download_audio_frame, length=320, mode="determinate")
+progress_bar_label.grid(row=2, column=0, columnspan=1, padx=5, pady=5, sticky=tk.W)
+progress_bar.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
+
+# Bring the default frame to the front
+youtube_frame.tkraise()
+
+# Run the main loop
+gui_root.mainloop()
