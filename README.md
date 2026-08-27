@@ -81,7 +81,16 @@ npm run build
 
 ### 🖥️ Option B: Desktop Edition (`main.py` Python GUI)
 
-The repository includes a standalone Python desktop application (`main.py`) matching all 6 tool modules.
+The repository includes a modern standalone Python desktop application (`main.py`) powered by `yt-dlp`, `OpenCV (cv2)`, `Pillow`, and `pydub`.
+
+#### New Desktop Capabilities:
+- 🌐 **Universal Downloader**: Downloads from YouTube (4K / 1080p muxing), Facebook, TikTok, Instagram, Twitter/X, Reddit, Bilibili, and 1000+ online video sources.
+- 📑 **Interactive Playlist Batching**: Analyzes playlist contents, displays an interactive Treeview checklist with video titles & durations, and downloads queues with individual progress indicators.
+- 🎵 **Audio Stream Extractor**: Studio-grade MP3 (320kbps), M4A, Lossless WAV, FLAC, and OPUS with embedded metadata & ID3 tags.
+- 🎞️ **Real-time Video Frame Canvas**: Open local video files, scrub through video frames with visual canvas playback, and capture stills (single frame or batch 1 frame/sec).
+- ✂️ **Audio Waveform Trimmer**: Interactive audio waveform canvas with clickable interval placement and FFmpeg lossless export.
+- 📜 **Live Activity Terminal**: Real-time console showing download logs, speed, ETA, and FFmpeg diagnostics.
+- 🇰🇭 **Bilingual Support**: Instant toggling between English and Khmer (ភាសាខ្មែរ).
 
 #### Prerequisites
 - Python 3.8+
