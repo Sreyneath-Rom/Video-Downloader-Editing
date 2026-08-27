@@ -1,0 +1,42 @@
+# --- Python Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+ENV.venv/
+
+# --- Python Cache and Compiled Files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Multimedia Output & Downloads (Ignore local video/audio testing assets) ---
+*.mp4
+*.webm
+*.mkv
+*.avi
+*.mov
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.ogg
+*.png
+*.jpg
+*.jpeg
+
+# --- Node.js / Web Application Dependencies & Builds ---
+node_modules/
+dist/
+.eslintcache
+
+# --- OS & IDE Metadata ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
