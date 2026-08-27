@@ -628,7 +628,8 @@ class MediaToolsProApp:
         
         # Build yt-dlp options based on quality choice
         ydl_opts = {
-            'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(dest, '%(title).100s.%(ext)s'),
+            'trim_file_name': 100,
             'nocheckcertificate': True,
             'ignoreerrors': False,
             'no_color': True,
@@ -731,7 +732,8 @@ class MediaToolsProApp:
 
         choice = self.fb_quality_var.get()
         ydl_opts = {
-            'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(dest, '%(title).100s.%(ext)s'),
+            'trim_file_name': 100,
             'nocheckcertificate': True,
         }
 
@@ -899,7 +901,8 @@ class MediaToolsProApp:
                         target_url = f"https://www.youtube.com/watch?v={target_url}"
                     
                     ydl_opts = {
-                        'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
+                        'outtmpl': os.path.join(dest, '%(title).100s.%(ext)s'),
+                        'trim_file_name': 100,
                         'format': 'best[ext=mp4]/best',
                         'nocheckcertificate': True,
                     }
@@ -988,7 +991,8 @@ class MediaToolsProApp:
         bitrate = self.aud_bitrate_var.get().split(" ")[0]
 
         ydl_opts = {
-            'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(dest, '%(title).100s.%(ext)s'),
+            'trim_file_name': 100,
             'format': 'bestaudio/best',
             'nocheckcertificate': True,
             'postprocessors': [{
@@ -1371,8 +1375,10 @@ class MediaToolsProApp:
             self._update_status(self.t["status_downloading"], 5)
             self.log_message(f"⬇ Initiating stream download for: {url}")
 
-            # Attach custom progress hook
+            # Attach custom progress hook & safe filename constraint
             ydl_opts['progress_hooks'] = [self._ytdlp_progress_hook]
+            ydl_opts.setdefault('trim_file_name', 100)
+            ydl_opts.setdefault('restrictfilenames', False)
 
             try:
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
