@@ -9,6 +9,8 @@ import {
   ListVideo,
   Globe,
   Radio,
+  Terminal,
+  FolderOpen,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -16,6 +18,7 @@ interface SidebarProps {
   onSelectTab: (tab: ToolTab) => void;
   lang: Language;
   onToggleLang: () => void;
+  logCount?: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -23,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   lang,
   onToggleLang,
+  logCount = 0,
 }) => {
   const t = translations[lang];
 
@@ -32,42 +36,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: t.tabYouTube,
       icon: YoutubeIcon,
       accentColor: 'text-red-500',
-      activeBg: 'bg-red-500/10 text-red-600',
     },
     {
       id: 'facebook' as ToolTab,
       label: t.tabFacebook,
       icon: FacebookIcon,
       accentColor: 'text-blue-600',
-      activeBg: 'bg-blue-500/10 text-blue-600',
     },
     {
       id: 'playlist_youtube' as ToolTab,
       label: t.tabPlaylist,
       icon: ListVideo,
       accentColor: 'text-purple-600',
-      activeBg: 'bg-purple-500/10 text-purple-600',
     },
     {
       id: 'audio_download' as ToolTab,
       label: t.tabAudioDownload,
       icon: Music,
       accentColor: 'text-emerald-600',
-      activeBg: 'bg-emerald-500/10 text-emerald-600',
     },
     {
       id: 'video_frame_extractor' as ToolTab,
       label: t.tabFrameExtractor,
       icon: ImageIcon,
       accentColor: 'text-sky-600',
-      activeBg: 'bg-sky-500/10 text-sky-600',
     },
     {
       id: 'audio_cutter' as ToolTab,
       label: t.tabAudioCutter,
       icon: Scissors,
       accentColor: 'text-teal-600',
-      activeBg: 'bg-teal-500/10 text-teal-600',
+    },
+    {
+      id: 'logs' as ToolTab,
+      label: t.tabLogs,
+      icon: Terminal,
+      accentColor: 'text-indigo-600',
+      badge: logCount > 0 ? (logCount > 99 ? '99+' : logCount.toString()) : undefined,
     },
   ];
 
@@ -78,12 +83,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span>{lang === 'km' ? 'ម៉ឺនុយមុខងារ' : 'MEDIA MODULES'}</span>
           <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
             <Radio className="w-3.5 h-3.5 animate-pulse" />
-            Ready
+            Active
           </span>
         </div>
 
-        {/* Responsive layout: 2 columns on mobile, 3 columns on tablet, 1 column vertical on desktop */}
-        <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2.5 sm:gap-3">
+        {/* Responsive grid for tabs */}
+        <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-2.5">
           {tools.map((tool) => {
             const Icon = tool.icon;
             const isActive = activeTab === tool.id;
@@ -93,22 +98,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={tool.id}
                 id={`tab-btn-${tool.id}`}
                 onClick={() => onSelectTab(tool.id)}
-                className={`w-full min-h-[48px] flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3.5 rounded-2xl text-left font-semibold text-xs sm:text-sm transition-all duration-200 ${
+                className={`w-full min-h-[46px] flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 rounded-2xl text-left font-semibold text-xs sm:text-sm transition-all duration-200 ${
                   isActive
-                    ? 'neu-pill-inset text-slate-900 bg-[#e6edf5] font-bold'
+                    ? 'neu-pill-inset text-slate-900 bg-[#e6edf5] font-bold shadow-inner'
                     : 'neu-btn hover:text-slate-900 text-slate-600'
                 }`}
               >
-                <div
-                  className={`p-1.5 sm:p-2 rounded-xl shrink-0 transition-all ${
-                    isActive
-                      ? 'neu-card-sm text-emerald-600 bg-[#e6edf5]'
-                      : 'neu-card-sm text-slate-500'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${tool.accentColor}`} />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`p-1.5 rounded-xl shrink-0 transition-all ${
+                      isActive
+                        ? 'neu-card-sm text-emerald-600 bg-[#e6edf5]'
+                        : 'neu-card-sm text-slate-500'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${tool.accentColor}`} />
+                  </div>
+                  <span className="truncate leading-tight">{tool.label}</span>
                 </div>
-                <span className="truncate leading-tight">{tool.label}</span>
+
+                {tool.badge && (
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold bg-indigo-500 text-white rounded-full shrink-0">
+                    {tool.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -119,25 +132,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           id="sidebar-lang-btn"
           onClick={onToggleLang}
-          className="w-full neu-btn flex items-center justify-center gap-2 px-4 py-3 text-slate-700 hover:text-emerald-600 text-xs font-bold transition min-h-[44px]"
+          className="w-full neu-btn flex items-center justify-center gap-2 px-4 py-2.5 text-slate-700 hover:text-emerald-600 text-xs font-bold transition min-h-[42px]"
         >
           <Globe className="w-4 h-4 text-emerald-600" />
           <span>{t.languageButton}</span>
         </button>
 
-        <div className="p-4 rounded-2xl neu-inset text-[11px] text-slate-600 space-y-1.5">
+        <div className="p-3.5 rounded-2xl neu-inset text-[11px] text-slate-600 space-y-1.5">
           <div className="font-bold text-slate-800 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-            Tkinter &rarr; Web Engine
+            <FolderOpen className="w-3.5 h-3.5 text-emerald-600" />
+            Downloads Directory
           </div>
-          <p className="text-slate-500 leading-relaxed">
-            {lang === 'km'
-              ? 'កម្មវិធីដំណើរការដោយផ្ទាល់នៅលើ Browser ដោយមិនចាំបាច់ដំឡើង Python ឬ FFmpeg ឡើយ។'
-              : 'Standalone browser application preserving the exact UI design and functions from Tkinter.'}
+          <p className="text-slate-500 font-mono text-[10px] truncate bg-white/40 px-2 py-1 rounded border border-slate-200">
+            ~/Downloads/MediaToolsPro
           </p>
         </div>
       </div>
     </aside>
   );
 };
-

@@ -1,4 +1,5 @@
 import { VideoInfo, PlaylistItem } from '../types';
+import { logger } from './logger';
 
 export function extractYouTubeId(url: string): string | null {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -8,9 +9,12 @@ export function extractYouTubeId(url: string): string | null {
 
 export async function fetchYouTubeInfo(url: string): Promise<VideoInfo> {
   const id = extractYouTubeId(url) || 'dQw4w9WgXcQ';
-  let title = 'Sample YouTube Media Stream';
-  let author = 'Media Creator';
-  const thumbnail = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80`;
+  let title = 'Sample 4K Studio Showcase Stream';
+  let author = 'Official Media Creator';
+  let views = '1,428,920 views';
+  const thumbnail = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+
+  logger.addLog('info', `Analyzing video metadata from endpoint: ${url.substring(0, 60)}...`, 'YouTube');
 
   try {
     const oembedUrl = `https://noembed.com/embed?url=${encodeURIComponent(url)}`;
@@ -21,20 +25,26 @@ export async function fetchYouTubeInfo(url: string): Promise<VideoInfo> {
       if (data.author_name) author = data.author_name;
     }
   } catch {
-    // fallback to default preview
+    // fallback
   }
+
+  logger.addLog('success', `Found metadata: "${title.substring(0, 45)}" by ${author}`, 'YouTube');
 
   return {
     id,
     title,
-    thumbnail: `https://img.youtube.com/vi/${id}/hqdefault.jpg` || thumbnail,
+    thumbnail,
     duration: '04:15',
     author,
+    views,
     formats: [
-      { quality: '1080p Full HD', ext: 'mp4', size: '142.4 MB', url: '#' },
-      { quality: '720p HD', ext: 'mp4', size: '68.2 MB', url: '#' },
-      { quality: '480p SD', ext: 'mp4', size: '32.1 MB', url: '#' },
-      { quality: '360p', ext: 'mp4', size: '18.5 MB', url: '#' },
+      { quality: 'Best - Auto 4K/1080p + Audio Mux', ext: 'mp4', size: '284.6 MB', url: '#' },
+      { quality: '1080p Full HD (MP4)', ext: 'mp4', size: '142.4 MB', url: '#' },
+      { quality: '720p HD (MP4)', ext: 'mp4', size: '68.2 MB', url: '#' },
+      { quality: '480p Standard (MP4)', ext: 'mp4', size: '32.1 MB', url: '#' },
+      { quality: '360p Low Data (MP4)', ext: 'mp4', size: '18.5 MB', url: '#' },
+      { quality: 'Audio Only (MP3 320kbps Studio)', ext: 'mp3', size: '9.8 MB', url: '#' },
+      { quality: 'Lossless Master Audio (WAV)', ext: 'wav', size: '42.8 MB', url: '#' },
     ]
   };
 }
@@ -42,21 +52,27 @@ export async function fetchYouTubeInfo(url: string): Promise<VideoInfo> {
 export async function fetchFacebookInfo(url: string): Promise<VideoInfo> {
   const cleanUrl = url.trim();
   const id = 'fb_' + Math.random().toString(36).substring(7);
+  const isReel = cleanUrl.includes('reel') || cleanUrl.includes('shorts');
+  
+  logger.addLog('info', `Extracting public Facebook media stream: ${cleanUrl.substring(0, 50)}...`, 'Facebook');
+
   return {
     id,
-    title: cleanUrl.includes('reel') ? 'Facebook Reel Video Clip' : 'Facebook Public Video Post',
+    title: isReel ? 'Facebook Reel & Viral Clip' : 'Facebook Public High-Definition Video Post',
     thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=80',
     duration: '02:30',
-    author: 'Facebook Creator',
+    author: 'Social Media Creator',
+    views: '84,520 views',
     formats: [
       { quality: 'HD 1080p (High Definition)', ext: 'mp4', size: '45.8 MB', url: '#' },
       { quality: 'SD 720p (Standard Definition)', ext: 'mp4', size: '21.4 MB', url: '#' },
-      { quality: 'Audio Only (MP3)', ext: 'mp3', size: '5.2 MB', url: '#' },
+      { quality: 'Audio Track (MP3 320kbps)', ext: 'mp3', size: '5.2 MB', url: '#' },
     ]
   };
 }
 
-export async function fetchPlaylistInfo(_url: string): Promise<PlaylistItem[]> {
+export async function fetchPlaylistInfo(url: string): Promise<PlaylistItem[]> {
+  logger.addLog('info', `Enumerating playlist index tracks for: ${url.substring(0, 50)}...`, 'Playlist');
   return [
     {
       id: 'p1',
@@ -64,13 +80,15 @@ export async function fetchPlaylistInfo(_url: string): Promise<PlaylistItem[]> {
       duration: '03:45',
       thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&auto=format&fit=crop&q=80',
       selected: true,
+      status: 'pending'
     },
     {
       id: 'p2',
-      title: '02. Ambient Chill Beats & Soundscapes',
+      title: '02. Ambient Chill Beats & Electronic Soundscapes',
       duration: '05:20',
       thumbnail: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=80',
       selected: true,
+      status: 'pending'
     },
     {
       id: 'p3',
@@ -78,35 +96,106 @@ export async function fetchPlaylistInfo(_url: string): Promise<PlaylistItem[]> {
       duration: '04:12',
       thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&auto=format&fit=crop&q=80',
       selected: true,
+      status: 'pending'
     },
     {
       id: 'p4',
       title: '04. Acoustic Master Guitar Solo Recording',
       duration: '02:58',
       thumbnail: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=300&auto=format&fit=crop&q=80',
+      selected: true,
+      status: 'pending'
+    },
+    {
+      id: 'p5',
+      title: '05. Urban Timelapse Nightscape 60FPS Showcase',
+      duration: '04:50',
+      thumbnail: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=300&auto=format&fit=crop&q=80',
       selected: false,
+      status: 'pending'
     }
   ];
 }
 
-export function simulateDownload(
-  onProgress: (percent: number, status: string) => void,
+export interface AdvancedDownloadProgress {
+  percent: number;
+  speed: string;
+  eta: string;
+  downloadedMB: string;
+  totalMB: string;
+  status: string;
+}
+
+export function simulateDownloadWithMetrics(
+  totalSizeMB: number = 85.5,
+  sourceName: string = 'Stream',
+  onMetrics: (metrics: AdvancedDownloadProgress) => void,
   onComplete: () => void
 ) {
-  let progress = 0;
+  let percent = 0;
+  const startTime = Date.now();
+  logger.addLog('info', `Starting download stream for ${sourceName} (${totalSizeMB.toFixed(1)} MB)...`, sourceName);
+
   const interval = setInterval(() => {
-    progress += Math.floor(Math.random() * 15) + 5;
-    if (progress >= 100) {
-      progress = 100;
+    const step = Math.floor(Math.random() * 8) + 4;
+    percent = Math.min(100, percent + step);
+    
+    const downloadedMB = ((percent / 100) * totalSizeMB).toFixed(1);
+    const speedVal = (Math.random() * 4.5 + 8.2).toFixed(1); // 8.2 - 12.7 MB/s
+    const remainingMB = totalSizeMB - parseFloat(downloadedMB);
+    const etaSec = Math.max(1, Math.ceil(remainingMB / parseFloat(speedVal)));
+    const eta = `00:${etaSec < 10 ? '0' : ''}${etaSec}`;
+
+    if (percent >= 100) {
       clearInterval(interval);
-      onProgress(100, 'Finalizing container muxing & audio sync...');
+      onMetrics({
+        percent: 100,
+        speed: '0.0 MB/s',
+        eta: '00:00',
+        downloadedMB: totalSizeMB.toFixed(1),
+        totalMB: totalSizeMB.toFixed(1),
+        status: 'Finalizing stream muxing and audio synchronization...'
+      });
+
+      logger.addLog('success', `Completed download: ${sourceName} (${totalSizeMB.toFixed(1)} MB) in ${((Date.now() - startTime)/1000).toFixed(1)}s`, sourceName);
+
       setTimeout(() => {
+        // Trigger browser file save
+        triggerFileDownload(`${sourceName.replace(/[^a-zA-Z0-9_-]/g, '_')}_download.mp4`, 'Media Stream Payload');
         onComplete();
       }, 500);
     } else {
-      onProgress(progress, `Downloading chunks... ${progress}%`);
+      onMetrics({
+        percent,
+        speed: `${speedVal} MB/s`,
+        eta,
+        downloadedMB,
+        totalMB: totalSizeMB.toFixed(1),
+        status: `Downloading chunks... ${percent}%`
+      });
     }
-  }, 200);
+  }, 180);
 
-  return () => clearInterval(interval);
+  return () => {
+    clearInterval(interval);
+    logger.addLog('warn', `Download cancelled by user: ${sourceName}`, sourceName);
+  };
+}
+
+export function triggerFileDownload(filename: string, content: string | Blob = 'Sample Media Content') {
+  try {
+    const blob = typeof content === 'string' 
+      ? new Blob([content], { type: 'application/octet-stream' }) 
+      : content;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    console.error('File trigger error:', err);
+  }
 }

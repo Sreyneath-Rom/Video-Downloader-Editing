@@ -6,7 +6,8 @@ export type ToolTab =
   | 'playlist_youtube'
   | 'audio_download'
   | 'video_frame_extractor'
-  | 'audio_cutter';
+  | 'audio_cutter'
+  | 'logs';
 
 export interface VideoInfo {
   id: string;
@@ -14,6 +15,7 @@ export interface VideoInfo {
   thumbnail: string;
   duration: string;
   author: string;
+  views?: string;
   formats: {
     quality: string;
     ext: string;
@@ -28,6 +30,7 @@ export interface PlaylistItem {
   duration: string;
   thumbnail: string;
   selected: boolean;
+  status?: 'pending' | 'downloading' | 'completed' | 'failed';
 }
 
 export interface ExtractedFrame {
@@ -35,4 +38,23 @@ export interface ExtractedFrame {
   timestamp: string;
   dataUrl: string;
   timeInSeconds: number;
+}
+
+export interface LogEntry {
+  id: string;
+  timestamp: string;
+  level: 'info' | 'success' | 'warn' | 'error';
+  message: string;
+  source?: string;
+}
+
+export interface GlobalDownloadState {
+  isDownloading: boolean;
+  progress: number;
+  speed: string;
+  eta: string;
+  downloadedBytes: string;
+  totalBytes: string;
+  statusText: string;
+  activeItem?: string;
 }
