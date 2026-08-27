@@ -25,34 +25,39 @@
   }
 }
 
-/* Custom Neumorphic utility classes matching the user reference image */
+/* Custom Neumorphic & Modern Web Application utility classes */
 .neu-card {
   background: #e6edf5;
   border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: 8px 8px 18px #cad3df, -8px -8px 18px #ffffff;
 }
 
 .neu-card-sm {
   background: #e6edf5;
   border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow: 5px 5px 12px #cad3df, -5px -5px 12px #ffffff;
 }
 
 .neu-card-lg {
   background: #e6edf5;
   border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 12px 12px 28px #c5d0de, -12px -12px 28px #ffffff;
 }
 
 .neu-btn {
   background: #e6edf5;
   border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 5px 5px 12px #cad3df, -5px -5px 12px #ffffff;
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   color: #334155;
 }
 
 .neu-btn:hover {
+  border-color: rgba(255, 255, 255, 0.95);
   box-shadow: 3px 3px 8px #cad3df, -3px -3px 8px #ffffff;
   color: #0f172a;
 }
@@ -64,20 +69,21 @@
 }
 
 .neu-btn-primary {
-  background: linear-gradient(145deg, #12c98d, #0fa372);
+  background: linear-gradient(145deg, #10b981, #059669);
   color: #ffffff;
   border-radius: 14px;
-  box-shadow: 5px 5px 14px #cad3df, -5px -5px 14px #ffffff, 0 4px 12px rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 4px 4px 12px #cad3df, -4px -4px 12px #ffffff, 0 4px 14px rgba(16, 185, 129, 0.35);
   transition: all 0.18s ease;
 }
 
 .neu-btn-primary:hover {
-  background: linear-gradient(145deg, #10b981, #0d9668);
-  box-shadow: 3px 3px 9px #cad3df, -3px -3px 9px #ffffff;
+  background: linear-gradient(145deg, #059669, #047857);
+  box-shadow: 2px 2px 8px #cad3df, -2px -2px 8px #ffffff, 0 6px 18px rgba(16, 185, 129, 0.45);
 }
 
 .neu-btn-primary:active {
-  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.2), inset -3px -3px 7px rgba(255, 255, 255, 0.1) !important;
+  box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.25), inset -3px -3px 7px rgba(255, 255, 255, 0.1) !important;
   transform: scale(0.99);
 }
 
@@ -85,7 +91,8 @@
   background: linear-gradient(145deg, #f87171, #ef4444);
   color: #ffffff;
   border-radius: 14px;
-  box-shadow: 5px 5px 14px #cad3df, -5px -5px 14px #ffffff, 0 4px 12px rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 4px 4px 12px #cad3df, -4px -4px 12px #ffffff, 0 4px 12px rgba(239, 68, 68, 0.25);
   transition: all 0.18s ease;
 }
 
@@ -97,33 +104,56 @@
   background: #e6edf5;
   border-radius: 14px;
   box-shadow: inset 3px 3px 7px #cad3df, inset -3px -3px 7px #ffffff;
-  border: 1px solid transparent;
+  border: 1px solid rgba(203, 213, 225, 0.6);
   color: #1e293b;
   transition: all 0.2s ease;
 }
 
 .neu-input:focus {
   outline: none;
-  border-color: rgba(99, 102, 241, 0.4);
-  box-shadow: inset 4px 4px 8px #cad3df, inset -4px -4px 8px #ffffff, 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: inset 3px 3px 7px #cad3df, inset -3px -3px 7px #ffffff, 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 .neu-pill {
   background: #e6edf5;
   border-radius: 9999px;
-  box-shadow: 4px 4px 10px #cad3df, -4px -4px 10px #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 3px 3px 8px #cad3df, -3px -3px 8px #ffffff;
   transition: all 0.18s ease;
 }
 
 .neu-pill-inset {
   background: #e6edf5;
   border-radius: 9999px;
+  border: 1px solid rgba(203, 213, 225, 0.4);
   box-shadow: inset 3px 3px 6px #cad3df, inset -3px -3px 6px #ffffff;
 }
 
 .neu-inset {
   background: #e6edf5;
+  border-radius: 14px;
+  border: 1px solid rgba(203, 213, 225, 0.4);
   box-shadow: inset 4px 4px 8px #cad3df, inset -4px -4px 8px #ffffff;
+}
+
+/* Modern Web App helpers */
+.web-tab-active {
+  background: linear-gradient(135deg, #e6edf5 0%, #dbe6f3 100%);
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  box-shadow: inset 2px 2px 5px #cad3df, inset -2px -2px 5px #ffffff, 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+.web-glass-card {
+  background: rgba(230, 237, 245, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 30px rgba(160, 175, 195, 0.35);
+}
+
+.desktop-window-header {
+  background: linear-gradient(180deg, #dbe4ee 0%, #cbd8e5 100%);
+  border-bottom: 1px solid #b8c7d7;
 }
 
 .neu-toggle {

@@ -4,6 +4,7 @@ import { translations } from '../translations';
 import { fetchYouTubeInfo, simulateDownloadWithMetrics } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
 import { YoutubeIcon } from './icons';
+import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   Folder,
   Download,
@@ -18,6 +19,8 @@ import {
   XCircle,
   Eye,
   Sliders,
+  Server,
+  Globe,
 } from 'lucide-react';
 
 interface YouTubeDownloaderProps {
@@ -37,6 +40,7 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
   const [optSubtitles, setOptSubtitles] = useState<boolean>(false);
   const [optThumbnail, setOptThumbnail] = useState<boolean>(true);
   const [optMetadata, setOptMetadata] = useState<boolean>(true);
+  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -136,9 +140,16 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
       totalBytes: '85.5 MB',
     });
 
+    const format = selectedQuality.includes('MP3')
+      ? 'mp3'
+      : selectedQuality.includes('WAV')
+      ? 'wav'
+      : 'mp4';
+
     const cleanup = simulateDownloadWithMetrics(
       85.5,
       title,
+      format,
       (m) => {
         setProgress(m.percent);
         setSpeed(m.speed);
@@ -419,14 +430,48 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
               <span>{t.cancel}</span>
             </button>
           ) : (
-            <button
-              id="youtube-download-submit-btn"
-              onClick={handleDownload}
-              className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
-            >
-              <Download className="w-4 h-4" />
-              <span>{t.downloadVideo}</span>
-            </button>
+            <>
+              <button
+                id="youtube-download-submit-btn"
+                onClick={handleDownload}
+                className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
+              >
+                <Download className="w-4 h-4" />
+                <span>{t.downloadVideo}</span>
+              </button>
+
+              <a
+                id="youtube-direct-server-link"
+                href={`/api/media/download?title=${encodeURIComponent(
+                  videoInfo?.title || 'YouTube_Media'
+                )}&format=${
+                  selectedQuality.includes('MP3')
+                    ? 'mp3'
+                    : selectedQuality.includes('WAV')
+                    ? 'wav'
+                    : 'mp4'
+                }&quality=${encodeURIComponent(selectedQuality)}`}
+                download
+                target="_blank"
+                rel="noreferrer"
+                className="py-3 px-4 neu-btn text-emerald-700 hover:text-emerald-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Direct Server Download (Bypasses iframe restrictions)"
+              >
+                <Server className="w-4 h-4 text-emerald-600" />
+                <span className="hidden sm:inline">Direct Link</span>
+              </a>
+
+              <button
+                type="button"
+                id="youtube-mirrors-btn"
+                onClick={() => setShowAssistModal(true)}
+                className="py-3 px-4 neu-btn text-purple-700 hover:text-purple-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Open Fast Mirrors & Download Options"
+              >
+                <Globe className="w-4 h-4 text-purple-600" />
+                <span className="hidden sm:inline">Options</span>
+              </button>
+            </>
           )}
 
           <button
@@ -437,13 +482,30 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
               setProgress(0);
               setStatusMessage(null);
             }}
-            className="py-3 px-5 neu-btn text-slate-700 hover:text-red-500 font-bold text-sm flex items-center gap-2"
+            className="py-3 px-4 neu-btn text-slate-700 hover:text-red-500 font-bold text-sm flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             <span>{t.reset}</span>
           </button>
         </div>
       </div>
+
+      {/* Download Assist & Mirror Options Modal */}
+      <DownloadAssistModal
+        isOpen={showAssistModal}
+        onClose={() => setShowAssistModal(false)}
+        lang={lang}
+        mediaUrl={url}
+        mediaTitle={videoInfo?.title || 'YouTube_Stream'}
+        format={
+          selectedQuality.includes('MP3')
+            ? 'mp3'
+            : selectedQuality.includes('WAV')
+            ? 'wav'
+            : 'mp4'
+        }
+        quality={selectedQuality}
+      />
     </div>
   );
 };

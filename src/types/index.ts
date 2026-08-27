@@ -1,4 +1,5 @@
 export type Language = 'en' | 'km';
+export type UiMode = 'web' | 'desktop';
 
 export type ToolTab = 
   | 'youtube'

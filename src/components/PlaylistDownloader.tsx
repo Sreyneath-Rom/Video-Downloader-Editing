@@ -3,6 +3,7 @@ import { Language, PlaylistItem, GlobalDownloadState } from '../types';
 import { translations } from '../translations';
 import { fetchPlaylistInfo, triggerFileDownload } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
+import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   ListVideo,
   Folder,
@@ -19,6 +20,8 @@ import {
   Clipboard,
   XCircle,
   Check,
+  Server,
+  Globe,
 } from 'lucide-react';
 
 interface PlaylistDownloaderProps {
@@ -41,6 +44,7 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
   const [progress, setProgress] = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
+  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const cancelFlagRef = useRef<boolean>(false);
 
@@ -443,18 +447,46 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
               <span>{t.cancel}</span>
             </button>
           ) : (
-            <button
-              id="playlist-download-submit-btn"
-              onClick={handleDownload}
-              className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
-            >
-              <Download className="w-4 h-4" />
-              <span>
-                {selectedCount > 0
-                  ? `${t.downloadAll} (${selectedCount})`
-                  : t.downloadAll}
-              </span>
-            </button>
+            <>
+              <button
+                id="playlist-download-submit-btn"
+                onClick={handleDownload}
+                className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
+              >
+                <Download className="w-4 h-4" />
+                <span>
+                  {selectedCount > 0
+                    ? `${t.downloadAll} (${selectedCount})`
+                    : t.downloadAll}
+                </span>
+              </button>
+
+              <a
+                id="playlist-direct-server-link"
+                href={`/api/media/download?title=${encodeURIComponent(
+                  `Playlist_Archive_${selectedCount || 1}_Tracks`
+                )}&format=zip&quality=FullBatch`}
+                download
+                target="_blank"
+                rel="noreferrer"
+                className="py-3 px-4 neu-btn text-emerald-700 hover:text-emerald-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Direct Server ZIP Download (Bypasses iframe restrictions)"
+              >
+                <Server className="w-4 h-4 text-emerald-600" />
+                <span className="hidden sm:inline">Direct ZIP</span>
+              </a>
+
+              <button
+                type="button"
+                id="playlist-mirrors-btn"
+                onClick={() => setShowAssistModal(true)}
+                className="py-3 px-4 neu-btn text-purple-700 hover:text-purple-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Open Fast Mirrors & Download Options"
+              >
+                <Globe className="w-4 h-4 text-purple-600" />
+                <span className="hidden sm:inline">Options</span>
+              </button>
+            </>
           )}
 
           <button
@@ -465,13 +497,24 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
               setProgress(0);
               setStatusMessage(null);
             }}
-            className="py-3 px-5 neu-btn text-slate-700 hover:text-purple-600 font-bold text-sm flex items-center gap-2"
+            className="py-3 px-4 neu-btn text-slate-700 hover:text-purple-600 font-bold text-sm flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             <span>{t.reset}</span>
           </button>
         </div>
       </div>
+
+      {/* Download Assist & Mirror Options Modal */}
+      <DownloadAssistModal
+        isOpen={showAssistModal}
+        onClose={() => setShowAssistModal(false)}
+        lang={lang}
+        mediaUrl={url}
+        mediaTitle={`Playlist_Archive_${selectedCount || 1}_Tracks`}
+        format="zip"
+        quality="Batch"
+      />
     </div>
   );
 };

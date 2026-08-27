@@ -64,6 +64,72 @@ export const VideoFrameExtractor: React.FC<VideoFrameExtractorProps> = ({ lang }
     }
   };
 
+  const handleLoadDemoVideo = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 360;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const stream = canvas.captureStream(30);
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      const chunks: Blob[] = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        if (videoUrl) URL.revokeObjectURL(videoUrl);
+        const url = URL.createObjectURL(blob);
+        setVideoUrl(url);
+        setFrames([]);
+        setStatusType('success');
+        setStatusMessage('Loaded Demo Clip: Media_Studio_Preview.webm (4.0s)');
+      };
+
+      mediaRecorder.start();
+
+      let frameCount = 0;
+      const totalFrames = 100;
+      const drawFrame = () => {
+        if (frameCount >= totalFrames) {
+          mediaRecorder.stop();
+          return;
+        }
+
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, 640, 360);
+
+        const t = frameCount / 25;
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(320 + Math.sin(t * 3) * 120, 180 + Math.cos(t * 3) * 60, 40, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 22px monospace';
+        ctx.fillText('MEDIA TOOLS PRO &bull; FRAME DEMO', 110, 80);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '16px monospace';
+        ctx.fillText(`Time: ${t.toFixed(2)}s | Frame: #${frameCount}`, 190, 270);
+
+        frameCount++;
+        setTimeout(drawFrame, 20);
+      };
+
+      drawFrame();
+    } catch {
+      setVideoUrl('https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm');
+      setStatusType('success');
+      setStatusMessage('Loaded Demo Video (Flower WebM Clip)');
+    }
+  };
+
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
@@ -186,13 +252,26 @@ export const VideoFrameExtractor: React.FC<VideoFrameExtractorProps> = ({ lang }
           <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium">
             Supports MP4, WebM, MKV, AVI, and MOV video formats with frame-by-frame seeking.
           </p>
-          <button
-            type="button"
-            className="mt-4 px-5 py-2.5 neu-btn text-sky-700 font-bold rounded-xl text-xs inline-flex items-center gap-1.5 transition"
-          >
-            <Upload className="w-4 h-4" />
-            {t.browseVideo}
-          </button>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+            <button
+              type="button"
+              className="px-5 py-2.5 neu-btn text-sky-700 font-bold rounded-xl text-xs inline-flex items-center gap-1.5 transition"
+            >
+              <Upload className="w-4 h-4" />
+              {t.browseVideo}
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLoadDemoVideo();
+              }}
+              className="px-4 py-2.5 neu-btn text-emerald-700 hover:text-emerald-900 font-bold rounded-xl text-xs inline-flex items-center gap-1.5 transition bg-emerald-50/50"
+            >
+              <Film className="w-4 h-4 text-emerald-600" />
+              <span>Load Demo Video Clip</span>
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-5">

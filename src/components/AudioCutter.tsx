@@ -93,6 +93,38 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
     }
   };
 
+  const handleLoadDemoAudio = () => {
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const ctx = new AudioCtx();
+    const sampleRate = ctx.sampleRate || 44100;
+    const durationSec = 16;
+    const buffer = ctx.createBuffer(2, sampleRate * durationSec, sampleRate);
+
+    for (let ch = 0; ch < 2; ch++) {
+      const data = buffer.getChannelData(ch);
+      for (let i = 0; i < data.length; i++) {
+        const t = i / sampleRate;
+        const noteIndex = Math.floor(t * 2) % 8;
+        const scale = [220, 247, 261, 293, 329, 349, 392, 440];
+        const freq = scale[noteIndex] || 220;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * Math.exp(-((t % 0.5) * 3)) * 0.35;
+      }
+    }
+
+    const demoFile = new File([new Blob()], 'Demo_Synth_Harmonics.wav', { type: 'audio/wav' });
+    setAudioFile(demoFile);
+    setAudioBuffer(buffer);
+    setDuration(durationSec);
+    const p = extractPeaks(buffer, 220);
+    setPeaks(p);
+    setStartTime(0);
+    setStartTimeInput('00:00:00');
+    setEndTime(8);
+    setEndTimeInput('00:00:08');
+    setStatusType('success');
+    setStatusMessage('Loaded Demo Audio: Demo_Synth_Harmonics.wav (16s)');
+  };
+
   // Draw Waveform on Canvas with dynamic high-DPI scaling
   useEffect(() => {
     if (!canvasRef.current || peaks.length === 0) return;
@@ -341,9 +373,21 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
           <h3 className="text-base font-bold text-slate-800 mb-1">
             {loading ? 'Decoding Audio...' : t.dropAudioHere}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium">
+          <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium mb-4">
             Supports MP3, WAV, OGG, AAC, FLAC, and M4A audio tracks.
           </p>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLoadDemoAudio();
+            }}
+            className="neu-btn px-4 py-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 rounded-xl inline-flex items-center gap-2 bg-emerald-50/50"
+          >
+            <Music className="w-3.5 h-3.5" />
+            <span>Load Demo Audio Track (15s Synth)</span>
+          </button>
         </div>
       ) : (
         <div className="space-y-5">

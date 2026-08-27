@@ -4,6 +4,7 @@ import { translations } from '../translations';
 import { fetchFacebookInfo, simulateDownloadWithMetrics } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
 import { FacebookIcon } from './icons';
+import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   Folder,
   Download,
@@ -19,6 +20,8 @@ import {
   Video,
   Film,
   Music,
+  Server,
+  Globe,
 } from 'lucide-react';
 
 interface FacebookDownloaderProps {
@@ -43,6 +46,7 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
   const [eta, setEta] = useState<string>('00:00');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
+  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const cancelFnRef = useRef<(() => void) | null>(null);
 
@@ -122,9 +126,12 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
       totalBytes: `${size.toFixed(1)} MB`,
     });
 
+    const format = qualityMode === 'audio' ? 'mp3' : 'mp4';
+
     const cleanup = simulateDownloadWithMetrics(
       size,
       title,
+      format,
       (m) => {
         setProgress(m.percent);
         setSpeed(m.speed);
@@ -400,14 +407,42 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               <span>{t.cancel}</span>
             </button>
           ) : (
-            <button
-              id="facebook-download-submit-btn"
-              onClick={handleDownload}
-              className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
-            >
-              <Download className="w-4 h-4" />
-              <span>{t.downloadFacebook}</span>
-            </button>
+            <>
+              <button
+                id="facebook-download-submit-btn"
+                onClick={handleDownload}
+                className="flex-1 py-3 px-6 neu-btn-primary font-bold text-sm flex items-center justify-center gap-2 tracking-wide"
+              >
+                <Download className="w-4 h-4" />
+                <span>{t.downloadFacebook}</span>
+              </button>
+
+              <a
+                id="facebook-direct-server-link"
+                href={`/api/media/download?title=${encodeURIComponent(
+                  videoInfo?.title || 'Facebook_Media'
+                )}&format=${qualityMode === 'audio' ? 'mp3' : 'mp4'}&quality=${qualityMode}`}
+                download
+                target="_blank"
+                rel="noreferrer"
+                className="py-3 px-4 neu-btn text-emerald-700 hover:text-emerald-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Direct Server Download (Bypasses iframe restrictions)"
+              >
+                <Server className="w-4 h-4 text-emerald-600" />
+                <span className="hidden sm:inline">Direct Link</span>
+              </a>
+
+              <button
+                type="button"
+                id="facebook-mirrors-btn"
+                onClick={() => setShowAssistModal(true)}
+                className="py-3 px-4 neu-btn text-blue-700 hover:text-blue-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
+                title="Open Fast Mirrors & Download Options"
+              >
+                <Globe className="w-4 h-4 text-blue-600" />
+                <span className="hidden sm:inline">Options</span>
+              </button>
+            </>
           )}
 
           <button
@@ -418,13 +453,24 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               setProgress(0);
               setStatusMessage(null);
             }}
-            className="py-3 px-5 neu-btn text-slate-700 hover:text-blue-600 font-bold text-sm flex items-center gap-2"
+            className="py-3 px-4 neu-btn text-slate-700 hover:text-blue-600 font-bold text-sm flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" />
             <span>{t.reset}</span>
           </button>
         </div>
       </div>
+
+      {/* Download Assist & Mirror Options Modal */}
+      <DownloadAssistModal
+        isOpen={showAssistModal}
+        onClose={() => setShowAssistModal(false)}
+        lang={lang}
+        mediaUrl={url}
+        mediaTitle={videoInfo?.title || 'Facebook_Media_Video'}
+        format={qualityMode === 'audio' ? 'mp3' : 'mp4'}
+        quality={qualityMode}
+      />
     </div>
   );
 };
