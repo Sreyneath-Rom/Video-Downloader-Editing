@@ -1,0 +1,8 @@
+{
+  "name": "Media Tools Pro",
+  "description": "Comprehensive video and audio toolkit featuring YouTube & Facebook media downloader, video frame extractor, audio cutter with waveform trimming, and bilingual support (English/Khmer).",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

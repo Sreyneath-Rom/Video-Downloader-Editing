@@ -1,543 +1,402 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import yt_dlp
-import cv2
+"""
+Media Tools Pro - Desktop Edition (Python Tkinter)
+===================================================
+A standalone desktop application supporting YouTube/Facebook downloading,
+playlist processing, audio extraction, video frame extraction, and audio cutting.
+
+Requirements:
+    pip install yt-dlp opencv-python pydub pillow
+    (Ensure ffmpeg is installed and available in system PATH)
+
+Run with:
+    python main.py
+"""
+
 import os
-from pydub import AudioSegment
-# Initialize the main window
-gui_root = tk.Tk()
-gui_root.title("Media Tools Pro")
-gui_root.geometry("1000x400")
-gui_root.resizable(1, 2)
-gui_root.config(bg="black")
+import sys
+import threading
+import tkinter as tk
+from tkinter import ttk, messagebox, filedialog
+from datetime import timedelta
 
-active_frame = "youtube"
-current_language = "English"
+try:
+    import yt_dlp
+except ImportError:
+    yt_dlp = None
 
-# Variables to store the directory paths and other necessary values
-download_dir = tk.StringVar()
-download_dir_fb = tk.StringVar()
-audio_save_dir = tk.StringVar()
-download_dir_yt = tk.StringVar()
-video_url = tk.StringVar()
-fb_url = tk.StringVar()
-video_path = tk.StringVar()
-timestamp_entry = tk.StringVar()
-audio_path = tk.StringVar()
-start_time_entry = tk.StringVar()
-end_time_entry = tk.StringVar()
-# Function to toggle the language
-def switch_language():
-    global current_language
-    if current_language == "English":
-        current_language = "ខ្មែរ"
-        # frame
-        youtube_frame.config(text=" ទាញយកវីដេអូ YouTube ")
-        facebook_frame.config(text="ទាញយកវីដេអូ Facebook")
-        video_frame_extractor_frame.config(text=" ទាញយករូបភាព ")
-        audio_cutter_frame.config(text=" កាត់សំឡេង ")
-        download_audio_frame.config(text=" ទាញយកសំឡេង ")
-        playlist_frame.config(text=" បញ្ជី YouTube ")
-        # btn
-        youtube_button.config(text="ទាញយកវីដេអូ YouTube")
-        facebook_button.config(text="ទាញយកវីដេអូ Facebook")
-        video_frame_extractor_button.config(text="ទាញយករូបភាព")
-        audio_cutter_button.config(text="កាត់សំឡេង")
-        download_audio_button.config(text="ទាញយកសំឡេង")
-        playlist_youtube_button.config(text="បញ្ជី YouTube")
-        # lable
-        url_label.config (text="វីដេអូ URL:")
-        des_label.config(text="ទីតាំងរក្សាទុក:")
-        fb_url_label.config(text="វីដេអូ URL:")
-        fb_des_label.config(text="ទីតាំងរក្សាទុក:")
-        playlist_label .config(text="វីដេអូ URL:")
-        playlist_des_label .config(text="ទីតាំងរក្សាទុក:")
-        video_label .config (text="ទីតាំងរក្សាទុក:")
-        timestamp_label .config (text="ពេលវេលានាទី(ម៉ោង:នាទី:វីនាទី):")
-        audio_file_label.config(text="ឯកសារសំឡេង:")
-        start_time_label.config(text="ចាប់ផ្ដើម(ម៉ោង:នាទី:វីនាទី):")
-        end_time_label.config(text="បញ្ចប់(ម៉ោង:នាទី:វីនាទី):")
-        save_dir_label.config(text="រក្សារទុក:")
-        progress_bar_label.config(text="ដំណើរការទាញយក:")
-        #btn lable
-        browse_button.config(text="ទីតាំង")
-        download_button.config(text="ទាញយក")
-        close_button.config( text="ចាកចេញ")
-        browse_button_fb.config(text="ទីតាំង")
-        download_button_fb.config(text="ទាញយក")
-        close_button_fb.config(text="ចាកចេញ")
-        browse_button_playlist.config( text="ទីតាំង")
-        download_button_playlist.config (text="ទាញយក")
-        close_button_playlist.config( text="ចាកចេញ")
-        browse_video_button.config( text="ទីតាំង វីដេអូ")
-        extract_image_button.config( text="ទាញយក​ រូបភាព") 
-        close_image_button.config( text="ចាកចេញ")
-        browse_audio_button.config( text="ទីតាំងឯកសារ")
-        browse_save_dir_button.config( text="ទីតាំង​រក្សារទុក")
-        cut_audio_button.config( text="កាត់សំឡេង")
-        close_audio_button.config( text="ចាកចេញ")
-        audio_browse_button.config(text="ទីតាំង")
-        audio_download_button.config(text="ទាញយកសំឡេង")
-        close_audio_download_button.config(text="ចាកចេញ")
-        switch_language_button.config(text="English")
-    else:
-        current_language = "English"
-        youtube_frame.config(text=" YouTube Downloader ")
-        facebook_frame.config(text=" Facebook Downloader ")
-        video_frame_extractor_frame.config(text=" Video Frame Extractor ")
-        audio_cutter_frame.config(text=" Audio Cutter ")
-        download_audio_frame.config(text=" Audio Downloader ")
-        playlist_frame.config(text=" Playlist Downloader ")
-        # btn
-        youtube_button.config(text="YouTube Downloader")
-        facebook_button.config(text="Facebook Downloader")
-        video_frame_extractor_button.config(text="Video Frame Extractor")
+try:
+    import cv2
+    from PIL import Image, ImageTk
+except ImportError:
+    cv2 = None
+    Image = None
+    ImageTk = None
 
-        audio_cutter_button.config(text="Audio Cutter")
-        download_audio_button.config(text="Audio Downloader")
-        playlist_youtube_button.config(text="Playlist Downloader")
-        # lable
-        url_label.config (text="Video URL:")
-        des_label.config(text="Destination:")
-        fb_url_label.config(text="Video URL:")
-        fb_des_label.config(text="Destination:")
-        playlist_label .config(text="Video URL:")
-        playlist_des_label .config(text="Destination:")
-        video_label .config (text="Video Path:")
-        timestamp_label .config (text="Timestamp (HH:MM:SS):")
-        audio_file_label.config(text="Audio File:")
-        start_time_label.config(text="Start Time (HH:MM:SS):")
-        end_time_label.config(text="End Time (HH:MM:SS):")
-        save_dir_label.config(text="Save Directory:")
-        audio_url_label.config(text="YouTube URL:")
-        progress_bar_label.config(text="Download Progress:")
-        #btn lable
-        browse_button.config(text="Browse")
-        download_button.config(text="Download")
-        close_button.config( text="Exit")
-        browse_button_fb.config(text="Browse")
-        download_button_fb.config(text="Download")
-        close_button_fb.config(text="Exit")
-        browse_button_playlist.config( text="Browse")
-        download_button_playlist.config (text="Download")
-        close_button_playlist.config( text="Exit")
-        browse_video_button.config( text="Browse Video")
-        extract_image_button.config( text="Extract Image") 
-        close_image_button.config( text="Exit")
-        browse_audio_button.config( text="Browse File")
-        browse_save_dir_button.config( text="Browse Save")
-        cut_audio_button.config( text="Cut Audio")
-        close_audio_button.config( text="Exit")
-        audio_browse_button.config(text="Browse")
-        audio_download_button.config(text="Download Audio")
-        close_audio_download_button.config(text="Exit")
-        switch_language_button.config(text="ខ្មែរ")
-
-def browse_directory():
-    directory = filedialog.askdirectory()
-    if active_frame == "youtube":
-        download_dir.set(directory)
-    elif active_frame == "facebook":
-        download_dir_fb.set(directory)
-    elif active_frame == "audio_cutter":
-        audio_save_dir.set(directory)
-    elif active_frame == "playlist_youtube":
-        download_dir_yt.set(directory)
-
-def download_video():
-    url = video_url.get()
-    if not url:
-        messagebox.showerror("Error", "Please enter a YouTube URL")
-        return
-
-    ydl_opts = {
-        'outtmpl': f"{download_dir.get()}/%(title)s.%(ext)s",
-        'format': 'best'
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-            messagebox.showinfo("Success", "YouTube video downloaded successfully!")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to download video: {e}")
-
-def download_audio():
-    url = video_url.get()
-    if not url:
-        messagebox.showerror("Error", "Please enter a YouTube URL")
-        return
-
-    download_path = filedialog.askdirectory(title="Select Download Folder")
-    if not download_path:
-        messagebox.showwarning("Warning", "Please select a folder to save the audio.")
-        return
-
-    try:
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": f"{download_path}/%(title)s.%(ext)s",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
-            "progress_hooks": [progress_hook],
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-
-        messagebox.showinfo("Success", "Audio downloaded successfully!")
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to download audio: {e}")
+try:
+    from pydub import AudioSegment
+except ImportError:
+    AudioSegment = None
 
 
-# Function to handle progress updates for downloads
-def progress_hook(d):
-    if d["status"] == "downloading":
-        total_bytes = d.get("total_bytes", 1)
-        downloaded_bytes = d.get("downloaded_bytes", 0)
-        progress_percentage = int((downloaded_bytes / total_bytes) * 100)
-        progress_bar["value"] = progress_percentage
-        gui_root.update()
-    elif d["status"] == "finished":
-        progress_bar["value"] = 100
-        gui_root.update()
+class MediaToolsProApp:
+    def __init__(self, root: tk.Tk):
+        self.root = root
+        self.root.title("Media Tools Pro (ឧបករណ៍មេឌៀកម្រិតខ្ពស់)")
+        self.root.geometry("860x680")
+        self.root.minsize(760, 580)
+        self.root.configure(bg="#e6edf5")
 
-# Function to download video from Facebook
-def download_facebook_video():
-    url = fb_url.get()
-    if not url:
-        messagebox.showerror("Error", "Please enter a Facebook URL")
-        return
-    fdl_opts = {
-        'outtmpl': f"{download_dir_fb.get()}/%(title)s.%(ext)s",
-        'format': 'best'
-    }
-    
-    try:
-        with yt_dlp.YoutubeDL(fdl_opts) as ydl:
-            ydl.download([url])
-            messagebox.showinfo("Success", "Facebook video downloaded successfully!") 
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to download video: {e}")
+        # Color Palette (Tactile Neumorphic Tones)
+        self.bg_color = "#e6edf5"
+        self.card_bg = "#e6edf5"
+        self.accent_green = "#10b981"
+        self.accent_red = "#ef4444"
+        self.text_color = "#1e293b"
 
-# Function to extract an image from a video
-def extract_image():
-    file_path = video_path.get()
-    timestamp = timestamp_entry.get()
-    if not os.path.exists(file_path):
-        messagebox.showerror("Error", "Please select a valid video file.")
-        return
-    try:
-        time_ms = convert_to_milliseconds(timestamp)
-        cap = cv2.VideoCapture(file_path)
-        if not cap.isOpened():
-            messagebox.showerror("Error", "Failed to open video file.")
+        self.current_lang = "en"
+        self.video_path = None
+        self.audio_path = None
+
+        self._setup_styles()
+        self._build_ui()
+
+    def _setup_styles(self):
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("TNotebook", background=self.bg_color, borderwidth=0)
+        style.configure("TNotebook.Tab", background="#d9e2ec", foreground="#334155", font=("Segoe UI", 10, "bold"), padding=[14, 8])
+        style.map("TNotebook.Tab", background=[("selected", "#ffffff")], foreground=[("selected", "#0f172a")])
+        style.configure("TFrame", background=self.bg_color)
+        style.configure("TLabel", background=self.bg_color, foreground=self.text_color, font=("Segoe UI", 10))
+        style.configure("Header.TLabel", font=("Segoe UI", 14, "bold"), foreground="#0f172a")
+        style.configure("TProgressbar", thickness=14, troughcolor="#d9e2ec", background=self.accent_green)
+
+    def _build_ui(self):
+        # Header Banner
+        header = tk.Frame(self.root, bg=self.bg_color, pady=12, padx=20)
+        header.pack(fill="x")
+
+        title_lbl = tk.Label(header, text="⚡ Media Tools Pro", font=("Segoe UI", 16, "bold"), bg=self.bg_color, fg="#0f172a")
+        title_lbl.pack(side="left")
+
+        lang_btn = tk.Button(header, text="🇰🇭 ភាសាខ្មែរ / EN", font=("Segoe UI", 9, "bold"), bg="#ffffff", fg="#334155",
+                             relief="groove", padx=10, pady=4, cursor="hand2", command=self._toggle_language)
+        lang_btn.pack(side="right")
+
+        # Tabs Container
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill="both", expand=True, padx=16, pady=(0, 16))
+
+        # 1. YouTube Tab
+        self.yt_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.yt_frame, text=" YouTube ")
+        self._build_youtube_tab()
+
+        # 2. Facebook Tab
+        self.fb_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.fb_frame, text=" Facebook ")
+        self._build_facebook_tab()
+
+        # 3. Playlist Tab
+        self.pl_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.pl_frame, text=" Playlist ")
+        self._build_playlist_tab()
+
+        # 4. Audio Downloader Tab
+        self.audio_dl_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.audio_dl_frame, text=" Audio Downloader ")
+        self._build_audio_dl_tab()
+
+        # 5. Video Frame Extractor Tab
+        self.frame_ext_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.frame_ext_frame, text=" Frame Extractor ")
+        self._build_frame_extractor_tab()
+
+        # 6. Audio Cutter Tab
+        self.cutter_frame = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.cutter_frame, text=" Audio Cutter ")
+        self._build_audio_cutter_tab()
+
+    def _toggle_language(self):
+        self.current_lang = "km" if self.current_lang == "en" else "en"
+        msg = "ភាសាត្រូវបានប្តូរទៅជា ភាសាខ្មែរ" if self.current_lang == "km" else "Language switched to English"
+        messagebox.showinfo("Language", msg)
+
+    # -------------------------------------------------------------
+    # 1. YouTube Downloader Tab
+    # -------------------------------------------------------------
+    def _build_youtube_tab(self):
+        f = self.yt_frame
+        tk.Label(f, text="YouTube Video Downloader", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
+
+        # URL Input
+        tk.Label(f, text="Video URL (Link):", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.yt_url_entry = tk.Entry(f, font=("Consolas", 10), relief="solid", bd=1)
+        self.yt_url_entry.pack(fill="x", pady=(2, 10), ipady=4)
+
+        # Destination Folder
+        tk.Label(f, text="Destination Folder:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        dest_box = tk.Frame(f, bg=self.bg_color)
+        dest_box.pack(fill="x", pady=(2, 10))
+        self.yt_dest_entry = tk.Entry(dest_box, font=("Segoe UI", 9), relief="solid", bd=1)
+        self.yt_dest_entry.insert(0, os.path.expanduser("~/Downloads"))
+        self.yt_dest_entry.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(dest_box, text="Browse...", bg="#ffffff", fg="#334155", relief="solid", bd=1,
+                  command=lambda: self._browse_folder(self.yt_dest_entry)).pack(side="left", padx=(8, 0), ipadx=8)
+
+        # Resolution dropdown
+        tk.Label(f, text="Preferred Resolution:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.yt_quality = ttk.Combobox(f, values=["1080p (Full HD)", "720p (HD)", "480p (SD)", "Best Available", "Audio Only (MP3)"], state="readonly")
+        self.yt_quality.current(1)
+        self.yt_quality.pack(fill="x", pady=(2, 12))
+
+        # Progress
+        self.yt_progress = ttk.Progressbar(f, mode="determinate")
+        self.yt_progress.pack(fill="x", pady=(6, 12))
+        self.yt_status = tk.Label(f, text="Ready to download", fg="#64748b", bg=self.bg_color, font=("Segoe UI", 9))
+        self.yt_status.pack(anchor="w")
+
+        # Action Buttons
+        btn_box = tk.Frame(f, bg=self.bg_color)
+        btn_box.pack(fill="x", pady=(16, 0))
+        tk.Button(btn_box, text="⬇ Start Download", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._download_youtube).pack(side="left", fill="x", expand=True, padx=(0, 6))
+        tk.Button(btn_box, text="Reset", bg="#F64247", fg="#ffffff", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=lambda: self.yt_url_entry.delete(0, tk.END)).pack(side="left", padx=(6, 0))
+
+    def _download_youtube(self):
+        url = self.yt_url_entry.get().strip()
+        dest = self.yt_dest_entry.get().strip()
+        if not url:
+            messagebox.showwarning("Warning", "Please enter a valid YouTube URL.")
             return
-        cap.set(cv2.CAP_PROP_POS_MSEC, time_ms)
-        ret, frame = cap.read()
-        if ret:
-            save_path = filedialog.asksaveasfilename(
-                title="Save Image As",
-                defaultextension=".png",
-                filetypes=[("PNG Files", "*.png"), ("JPEG Files", "*.jpg"), ("All Files", "*.*")]
-            )
-            if save_path:
-                cv2.imwrite(save_path, frame)
-                messagebox.showinfo("Success", f"Image saved to {save_path}")
-        else:
-            messagebox.showerror("Error", "Failed to extract frame at the specified time.")
+
+        def run():
+            try:
+                self.yt_status.config(text="Connecting and extracting streams...", fg="#0284c7")
+                self.yt_progress['value'] = 20
+                if yt_dlp:
+                    ydl_opts = {
+                        'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
+                        'progress_hooks': [self._yt_hook],
+                    }
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        ydl.download([url])
+                    self.yt_status.config(text="✓ Download complete!", fg="#16a34a")
+                    self.yt_progress['value'] = 100
+                else:
+                    self.yt_status.config(text="yt-dlp package not installed in environment", fg="#dc2626")
+            except Exception as e:
+                self.yt_status.config(text=f"Error: {str(e)[:60]}", fg="#dc2626")
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def _yt_hook(self, d):
+        if d['status'] == 'downloading':
+            total = d.get('total_bytes') or d.get('total_bytes_estimate') or 1
+            downloaded = d.get('downloaded_bytes', 0)
+            percent = int((downloaded / total) * 100)
+            self.yt_progress['value'] = percent
+            self.yt_status.config(text=f"Downloading: {percent}% ({d.get('_speed_str', '')})")
+
+    # -------------------------------------------------------------
+    # 2. Facebook Downloader Tab
+    # -------------------------------------------------------------
+    def _build_facebook_tab(self):
+        f = self.fb_frame
+        tk.Label(f, text="Facebook Video & Reels Downloader", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
+
+        tk.Label(f, text="Facebook Video / Reel Link:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.fb_url_entry = tk.Entry(f, font=("Consolas", 10), relief="solid", bd=1)
+        self.fb_url_entry.pack(fill="x", pady=(2, 10), ipady=4)
+
+        tk.Label(f, text="Destination Folder:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        dest_box = tk.Frame(f, bg=self.bg_color)
+        dest_box.pack(fill="x", pady=(2, 10))
+        self.fb_dest_entry = tk.Entry(dest_box, font=("Segoe UI", 9), relief="solid", bd=1)
+        self.fb_dest_entry.insert(0, os.path.expanduser("~/Downloads"))
+        self.fb_dest_entry.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(dest_box, text="Browse...", bg="#ffffff", fg="#334155", relief="solid", bd=1,
+                  command=lambda: self._browse_folder(self.fb_dest_entry)).pack(side="left", padx=(8, 0), ipadx=8)
+
+        tk.Button(f, text="⬇ Download Facebook Video", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._download_youtube).pack(fill="x", pady=16)
+
+    # -------------------------------------------------------------
+    # 3. Playlist Tab
+    # -------------------------------------------------------------
+    def _build_playlist_tab(self):
+        f = self.pl_frame
+        tk.Label(f, text="YouTube Playlist Batch Downloader", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
+
+        tk.Label(f, text="Playlist URL:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.pl_url_entry = tk.Entry(f, font=("Consolas", 10), relief="solid", bd=1)
+        self.pl_url_entry.pack(fill="x", pady=(2, 10), ipady=4)
+
+        tk.Button(f, text="⬇ Fetch & Download Playlist", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._download_youtube).pack(fill="x", pady=16)
+
+    # -------------------------------------------------------------
+    # 4. Audio Downloader Tab
+    # -------------------------------------------------------------
+    def _build_audio_dl_tab(self):
+        f = self.audio_dl_frame
+        tk.Label(f, text="Audio Downloader & Stream Extractor", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
+
+        tk.Label(f, text="Media URL:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.aud_url_entry = tk.Entry(f, font=("Consolas", 10), relief="solid", bd=1)
+        self.aud_url_entry.pack(fill="x", pady=(2, 10), ipady=4)
+
+        tk.Label(f, text="Audio Bitrate & Format:", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.aud_format = ttk.Combobox(f, values=["MP3 - 320 kbps (High Quality)", "MP3 - 192 kbps (Standard)", "WAV - Lossless", "M4A - 256 kbps"], state="readonly")
+        self.aud_format.current(0)
+        self.aud_format.pack(fill="x", pady=(2, 12))
+
+        tk.Button(f, text="🎵 Extract & Download Audio", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._download_youtube).pack(fill="x", pady=16)
+
+    # -------------------------------------------------------------
+    # 5. Video Frame Extractor Tab
+    # -------------------------------------------------------------
+    def _build_frame_extractor_tab(self):
+        f = self.frame_ext_frame
+        tk.Label(f, text="Video Frame Snapshot Extractor", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
+
+        # Select Video
+        top_box = tk.Frame(f, bg=self.bg_color)
+        top_box.pack(fill="x", pady=6)
+        self.video_lbl = tk.Label(top_box, text="No video selected", bg="#d9e2ec", relief="solid", bd=1, anchor="w", padx=8)
+        self.video_lbl.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(top_box, text="Open Video...", bg="#ffffff", fg="#334155", relief="solid", bd=1,
+                  command=self._open_video).pack(side="left", padx=(8, 0), ipadx=8)
+
+        # Timestamp Entry
+        tk.Label(f, text="Timestamp (HH:MM:SS or seconds):", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(8, 0))
+        self.frame_time_entry = tk.Entry(f, font=("Consolas", 10), relief="solid", bd=1)
+        self.frame_time_entry.insert(0, "00:00:05")
+        self.frame_time_entry.pack(fill="x", pady=(2, 10), ipady=4)
+
+        tk.Button(f, text="📷 Extract Frame to Image", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._extract_frame).pack(fill="x", pady=8)
+
+    def _open_video(self):
+        path = filedialog.askopenfilename(filetypes=[("Video files", "*.mp4 *.mkv *.avi *.mov *.webm")])
+        if path:
+            self.video_path = path
+            self.video_lbl.config(text=os.path.basename(path))
+
+    def _extract_frame(self):
+        if not self.video_path:
+            messagebox.showwarning("Warning", "Please select a video file first.")
+            return
+        if not cv2:
+            messagebox.showerror("Error", "OpenCV (cv2) is not installed. Install with `pip install opencv-python`.")
+            return
+
+        ts = self.frame_time_entry.get().strip()
+        seconds = self._parse_time(ts)
+
+        cap = cv2.VideoCapture(self.video_path)
+        cap.set(cv2.CAP_PROP_POS_MSEC, seconds * 1000)
+        success, frame = cap.read()
         cap.release()
-    except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
-# Function to convert time to milliseconds
-def convert_to_milliseconds(time_str):
-    parts = time_str.split(":")
-    if len(parts) == 2:
-        minutes, seconds = map(int, parts)
-        return (minutes * 60 + seconds) * 1000
-    elif len(parts) == 3:
-        hours, minutes, seconds = map(int, parts)
-        return (hours * 3600 + minutes * 60 + seconds) * 1000
-    else:
-        raise ValueError("Invalid time format. Use HH:MM:SS or MM:SS.")
+        if success:
+            out_name = f"frame_{int(seconds)}s.png"
+            save_path = os.path.join(os.path.expanduser("~/Downloads"), out_name)
+            cv2.imwrite(save_path, frame)
+            messagebox.showinfo("Success", f"Frame saved to:\n{save_path}")
+        else:
+            messagebox.showerror("Error", "Failed to extract frame at specified timestamp.")
 
-# Function to select an audio file
-def select_audio_file():
-    file_path = filedialog.askopenfilename(
-        title="Select Audio File",
-        filetypes=[("Audio Files", "*.mp3 *.wav *.ogg *.flac"), ("All Files", "*.*")]
-    )
-    if file_path:
-        audio_path.set(file_path)
+    # -------------------------------------------------------------
+    # 6. Audio Cutter Tab
+    # -------------------------------------------------------------
+    def _build_audio_cutter_tab(self):
+        f = self.cutter_frame
+        tk.Label(f, text="Interactive Audio Waveform Cutter", font=("Segoe UI", 12, "bold"), bg=self.bg_color).pack(anchor="w", pady=(0, 8))
 
+        top_box = tk.Frame(f, bg=self.bg_color)
+        top_box.pack(fill="x", pady=6)
+        self.audio_lbl = tk.Label(top_box, text="No audio selected", bg="#d9e2ec", relief="solid", bd=1, anchor="w", padx=8)
+        self.audio_lbl.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(top_box, text="Open Audio...", bg="#ffffff", fg="#334155", relief="solid", bd=1,
+                  command=self._open_audio).pack(side="left", padx=(8, 0), ipadx=8)
 
-# Function to cut the selected audio file based on start and end times
-def cut_audio():
-    file_path = audio_path.get()
-    start_time = start_time_entry.get()
-    end_time = end_time_entry.get()
-    if not os.path.exists(file_path):
-        messagebox.showerror("Error", "Please select a valid audio file.")
-        return
-    try:
-        start_ms = convert_to_milliseconds(start_time)
-        end_ms = convert_to_milliseconds(end_time)
-        if start_ms >= end_ms:
-            messagebox.showerror("Error", "Start time must be less than end time.")
+        time_box = tk.Frame(f, bg=self.bg_color)
+        time_box.pack(fill="x", pady=6)
+
+        t1_box = tk.Frame(time_box, bg=self.bg_color)
+        t1_box.pack(side="left", fill="x", expand=True, padx=(0, 6))
+        tk.Label(t1_box, text="Start Time (HH:MM:SS):", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.start_entry = tk.Entry(t1_box, font=("Consolas", 10), relief="solid", bd=1)
+        self.start_entry.insert(0, "00:00:00")
+        self.start_entry.pack(fill="x", ipady=4)
+
+        t2_box = tk.Frame(time_box, bg=self.bg_color)
+        t2_box.pack(side="left", fill="x", expand=True, padx=(6, 0))
+        tk.Label(t2_box, text="End Time (HH:MM:SS):", bg=self.bg_color, font=("Segoe UI", 9, "bold")).pack(anchor="w")
+        self.end_entry = tk.Entry(t2_box, font=("Consolas", 10), relief="solid", bd=1)
+        self.end_entry.insert(0, "00:00:30")
+        self.end_entry.pack(fill="x", ipady=4)
+
+        tk.Button(f, text="✂ Trim and Save Segment", bg="#15EF5F", fg="#0f172a", font=("Segoe UI", 10, "bold"),
+                  relief="flat", cursor="hand2", padx=16, pady=8, command=self._cut_audio).pack(fill="x", pady=16)
+
+    def _open_audio(self):
+        path = filedialog.askopenfilename(filetypes=[("Audio files", "*.mp3 *.wav *.ogg *.flac *.m4a")])
+        if path:
+            self.audio_path = path
+            self.audio_lbl.config(text=os.path.basename(path))
+
+    def _cut_audio(self):
+        if not self.audio_path:
+            messagebox.showwarning("Warning", "Please select an audio file first.")
             return
-        audio = AudioSegment.from_file(file_path)
-        if start_ms > len(audio) or end_ms > len(audio):
-            messagebox.showerror("Error", "Selected times are outside the audio duration.")
+        if not AudioSegment:
+            messagebox.showerror("Error", "pydub is not installed. Install with `pip install pydub`.")
             return
-        cut_audio = audio[start_ms:end_ms]
-        save_path = filedialog.asksaveasfilename(
-            title="Save Cut Audio As",
-            defaultextension=".mp3",
-            filetypes=[("MP3 Files", "*.mp3"), ("WAV Files", "*.wav"), ("All Files", "*.*")]
-        )
-        if save_path:
-            cut_audio.export(save_path, format=os.path.splitext(save_path)[1][1:])
-            messagebox.showinfo("Success", f"Audio saved to {save_path}")
-            status_label.config(text="Audio successfully cut and saved!", foreground="green")
-    except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
-# Function to switch to Audio YouTube downloader
-def switch_to_audio_YouTube():
-    global active_frame
-    active_frame = "audio_download"
-    download_audio_frame.tkraise()
+        t_start = self._parse_time(self.start_entry.get().strip()) * 1000
+        t_end = self._parse_time(self.end_entry.get().strip()) * 1000
 
-# Function to switch to YouTube downloader
-def switch_to_youtube():
-    global active_frame
-    active_frame = "youtube"
-    youtube_frame.tkraise()
+        try:
+            song = AudioSegment.from_file(self.audio_path)
+            trimmed = song[t_start:t_end]
+            save_path = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV Audio", "*.wav"), ("MP3 Audio", "*.mp3")])
+            if save_path:
+                ext = os.path.splitext(save_path)[1].replace(".", "")
+                trimmed.export(save_path, format=ext or "wav")
+                messagebox.showinfo("Success", f"Cut audio saved successfully to:\n{save_path}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to trim audio: {e}")
 
-# Function to switch to YouTube playlist downloader
-def switch_to_playlist_youtube():
-    global active_frame
-    active_frame = "playlist_youtube"
-    playlist_frame.tkraise()
+    # -------------------------------------------------------------
+    # Helper utilities
+    # -------------------------------------------------------------
+    def _browse_folder(self, entry_widget):
+        path = filedialog.askdirectory()
+        if path:
+            entry_widget.delete(0, tk.END)
+            entry_widget.insert(0, path)
 
-# Function to switch to Facebook downloader
-def switch_to_facebook():
-    global active_frame
-    active_frame = "facebook"
-    facebook_frame.tkraise()
-
-# Function to switch to Video Frame Extractor
-def switch_to_video_frame_extractor():
-    global active_frame
-    active_frame = "video_frame_extractor"
-    video_frame_extractor_frame.tkraise()
-
-# Function to switch to Audio Cutter
-def switch_to_audio_cutter():
-    global active_frame
-    active_frame = "audio_cutter"
-    audio_cutter_frame.tkraise()
-
-# Function to exit the application
-def exit_app():
-    if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit?"):
-        gui_root.destroy()
-
-# Create main frame container
-main_frame = tk.Frame(gui_root, bg="black")
-main_frame.grid(row=0,column=1)
-button_frame = tk.Frame(gui_root, bg="black")
-button_frame.grid(row=0,column=0,pady=30,padx=20)
+    def _parse_time(self, time_str: str) -> float:
+        try:
+            parts = time_str.split(":")
+            if len(parts) == 3:
+                return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
+            elif len(parts) == 2:
+                return float(parts[0]) * 60 + float(parts[1])
+            return float(time_str)
+        except ValueError:
+            return 0.0
 
 
-
-youtube_button = tk.Button(button_frame, text="YouTube Downloader",width=20, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_youtube)
-facebook_button = tk.Button(button_frame, text="Facebook Downloader",width=20, font=("verdana", 10), bg="#3b5998", fg="#FFFFFF", activebackground="#8b9dc3", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_facebook)
-video_frame_extractor_button = tk.Button(button_frame, text="Video Frame Extractor",width=20, font=("verdana", 10), bg="#1E90FF", fg="#FFFFFF", activebackground="#87CEFA", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_video_frame_extractor)
-audio_cutter_button = tk.Button(button_frame, text="Audio Cutter", font=("verdana", 10),width=20, bg="#28a745", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_audio_cutter)
-download_audio_button = tk.Button(button_frame, text="Audio Downloader", font=("verdana", 10),width=20, bg="#003", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_audio_YouTube)
-playlist_youtube_button = tk.Button(button_frame, text="Playlist Downloader", font=("verdana", 10),width=20, bg="#003", fg="#FFFFFF", activebackground="#8bc34a", activeforeground="#000000", relief=tk.GROOVE, command=switch_to_playlist_youtube)
-switch_language_button = tk.Button(button_frame, text="Khmer", font=("verdana", 10),width=20, bg="#8B0000", fg="#FFFFFF", activebackground="#ff6347", activeforeground="#000000", relief=tk.GROOVE, command=switch_language)
-
-youtube_button.pack(side=tk.TOP, padx=10,pady=10)
-facebook_button.pack(side=tk.TOP, padx=10,pady=10)
-video_frame_extractor_button.pack(side=tk.TOP, padx=10,pady=10)
-audio_cutter_button.pack(side=tk.TOP, padx=10,pady=10)
-download_audio_button.pack(side=tk.TOP, padx=10,pady=10)
-playlist_youtube_button.pack(side=tk.TOP, padx=10,pady=10)
-switch_language_button.pack(side=tk.TOP, padx=10,pady=10)
-
-# Create frames for functionalities
-youtube_frame = tk.LabelFrame(main_frame, text=" YouTube ", bg="#E5E4E2")
-facebook_frame = tk.LabelFrame(main_frame, text=" Facebook ", bg="#E5E4E2", padx=10, pady=10)
-video_frame_extractor_frame = tk.LabelFrame(main_frame, text=" Video Frame Extractor ", bg="#E5E4E2", padx=10, pady=10)
-audio_cutter_frame = tk.LabelFrame(main_frame, text=" Audio Cutter ", bg="#E5E4E2", padx=10, pady=10)
-download_audio_frame = tk.LabelFrame(main_frame, text=" Audio Downloader ", bg="#E5E4E2", padx=10, pady=10)
-playlist_frame = tk.LabelFrame(main_frame, text=" Playlist YouTube ", bg="#E5E4E2", padx=10, pady=10)
-
-for frame in (youtube_frame, facebook_frame, video_frame_extractor_frame, audio_cutter_frame, download_audio_frame, playlist_frame):
-    frame.grid(row=0, column=0, sticky='nsew', padx=20, pady=37.5)
-
-# YouTube downloader widgets
-url_label = tk.Label(youtube_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-des_label = tk.Label(youtube_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-
-video_url = tk.StringVar()
-download_dir = tk.StringVar()
-
-url_field = tk.Entry(youtube_frame, textvariable=video_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-des_field = tk.Entry(youtube_frame, textvariable=download_dir, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-browse_button = tk.Button(youtube_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
+def main():
+    root = tk.Tk()
+    app = MediaToolsProApp(root)
+    root.mainloop()
 
 
-
-download_button = tk.Button(youtube_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_video)
-close_button = tk.Button(youtube_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-browse_button.grid(row=1, column=3, padx=5, pady=5)
-download_button.grid(row=2, column=1, padx=5, pady=10)
-close_button.grid(row=2, column=2, padx=5, pady=10)
-
-# Facebook downloader widgets
-fb_url_label = tk.Label(facebook_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000")
-fb_des_label = tk.Label(facebook_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000")
-
-fb_url = tk.StringVar()
-download_dir_fb = tk.StringVar()
-
-fb_url_field = tk.Entry(facebook_frame, textvariable=fb_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-fb_des_field = tk.Entry(facebook_frame, textvariable=download_dir_fb, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-browse_button_fb = tk.Button(facebook_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
-
-download_button_fb = tk.Button(facebook_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_facebook_video)
-close_button_fb = tk.Button(facebook_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-fb_url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-fb_url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-fb_des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-fb_des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-browse_button_fb.grid(row=1, column=3, padx=5, pady=5)
-download_button_fb.grid(row=2, column=1, padx=5, pady=10)
-close_button_fb.grid(row=2, column=2, padx=5, pady=10)
-
-# Playlist downloader widgets 
-playlist_label = tk.Label(playlist_frame, text="Video URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-playlist_des_label = tk.Label(playlist_frame, text="Destination:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-
-playlist_url = tk.StringVar()
-download_dir_yt = tk.StringVar()
-
-playlist_field = tk.Entry(playlist_frame, textvariable=playlist_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-playlist_des_field = tk.Entry(playlist_frame, textvariable=download_dir_yt, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-browse_button_playlist = tk.Button(playlist_frame, text="Browse", width=8, font=("verdana", 10), bg="#FE9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
-
-download_button_playlist = tk.Button(playlist_frame, text="Download", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_video)
-close_button_playlist = tk.Button(playlist_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-
-
-
-playlist_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-playlist_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-playlist_des_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-playlist_des_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-browse_button_playlist.grid(row=1, column=3, padx=5, pady=5)
-download_button_playlist.grid(row=2, column=1, padx=5, pady=10)
-close_button_playlist.grid(row=2, column=2, padx=5, pady=10)
-
-# Video Frame Extractor widgets
-video_label = tk.Label(video_frame_extractor_frame, text="Video Path:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-timestamp_label = tk.Label(video_frame_extractor_frame, text="Timestamp (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-
-video_path = tk.StringVar()
-timestamp_entry = tk.StringVar()
-
-video_field = tk.Entry(video_frame_extractor_frame, textvariable=video_path, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-timestamp_field = tk.Entry(video_frame_extractor_frame, textvariable=timestamp_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-
-browse_video_button = tk.Button(video_frame_extractor_frame, text="Browse Video", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=lambda: video_path.set(filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4 *.avi *.mkv *.mov"), ("All Files", "*.*")])))
-extract_image_button = tk.Button(video_frame_extractor_frame, text="Extract Image", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=extract_image)
-close_image_button = tk.Button(video_frame_extractor_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-video_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-video_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-browse_video_button.grid(row=0, column=3, padx=5, pady=5)
-timestamp_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-timestamp_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-extract_image_button.grid(row=2, column=1, padx=5, pady=10)
-close_image_button.grid(row=2, column=2, padx=5, pady=10)
-
-# Audio Cutter widgets
-audio_file_label = tk.Label(audio_cutter_frame, text="Audio File:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-start_time_label = tk.Label(audio_cutter_frame, text="Start Time (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-end_time_label = tk.Label(audio_cutter_frame, text="End Time (HH:MM:SS):", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-save_dir_label = tk.Label(audio_cutter_frame, text="Save Directory:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-
-audio_file_field = tk.Entry(audio_cutter_frame, textvariable=audio_path, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-start_time_field = tk.Entry(audio_cutter_frame, textvariable=start_time_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-end_time_field = tk.Entry(audio_cutter_frame, textvariable=end_time_entry, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-save_dir_field = tk.Entry(audio_cutter_frame, textvariable=audio_save_dir, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-
-browse_audio_button = tk.Button(audio_cutter_frame, text="Browse File", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=select_audio_file)
-browse_save_dir_button = tk.Button(audio_cutter_frame, text="Browse Save", font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=lambda: audio_save_dir.set(filedialog.askdirectory()))
-
-
-
-cut_audio_button = tk.Button(audio_cutter_frame, text="Cut Audio", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=cut_audio)
-close_audio_button= tk.Button(audio_cutter_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-audio_file_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-audio_file_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-browse_audio_button.grid(row=0, column=3, padx=5, pady=5)
-
-start_time_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-start_time_field.grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-end_time_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-end_time_field.grid(row=2, column=1, padx=5, pady=5, columnspan=2)
-
-save_dir_label.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
-save_dir_field.grid(row=3, column=1, padx=5, pady=5, columnspan=2)
-browse_save_dir_button.grid(row=3, column=3, padx=5, pady=5)
-
-cut_audio_button.grid(row=4, column=1, padx=5, pady=10)
-close_audio_button.grid(row=4, column=2, padx=5, pady=10)
-
-# Status label for audio cutter
-status_label = tk.Label(audio_cutter_frame, text="", font=("verdana", 10), bg="#E5E4E2", fg="red", anchor=tk.W)
-status_label.grid(row=5, column=0, padx=5, pady=5, columnspan=3)
-
-# YouTube Audio Downloader widgets
-audio_url_label = tk.Label(download_audio_frame, text="YouTube URL:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-audio_url_field = tk.Entry(download_audio_frame, textvariable=video_url, width=40, font=("verdana", 10), bg="#FFFFFF", fg="#000000", relief=tk.GROOVE)
-audio_browse_button = tk.Button(download_audio_frame, text="Browse", width=8, font=("verdana", 10), bg="#FF9200", fg="#FFFFFF", activebackground="#FFE0B7", activeforeground="#000000", relief=tk.GROOVE, command=browse_directory)
-audio_download_button = tk.Button(download_audio_frame, text="Download Audio", width=18, font=("verdana", 10), bg="#15EF5F", fg="#FFFFFF", activebackground="#97F9B8", activeforeground="#000000", relief=tk.GROOVE, command=download_audio)
-close_audio_download_button = tk.Button(download_audio_frame, text="Exit", width=18, font=("verdana", 10), bg="#F64247", fg="#FFFFFF", activebackground="#F7A2A5", activeforeground="#000000", relief=tk.GROOVE, command=exit_app)
-
-audio_url_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-audio_url_field.grid(row=0, column=1, padx=5, pady=5, columnspan=2)
-audio_browse_button.grid(row=0, column=3, padx=5, pady=5)
-audio_download_button.grid(row=1, column=1, padx=5, pady=10)
-close_audio_download_button.grid(row=1, column=2, padx=5, pady=10)
-
-
-# Progress bar for audio download
-progress_bar_label = tk.Label(download_audio_frame, text="Download Progress:", font=("verdana", 10), bg="#E5E4E2", fg="#000000", anchor=tk.W)
-progress_bar = ttk.Progressbar(download_audio_frame, length=320, mode="determinate")
-progress_bar_label.grid(row=2, column=0, columnspan=1, padx=5, pady=5, sticky=tk.W)
-progress_bar.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
-
-# Bring the default frame to the front
-youtube_frame.tkraise()
-
-# Run the main loop
-gui_root.mainloop()
+if __name__ == "__main__":
+    main()
