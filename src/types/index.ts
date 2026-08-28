@@ -1,5 +1,6 @@
 export type Language = 'en' | 'km';
 export type UiMode = 'web' | 'desktop';
+export type DesktopTheme = 'dark_studio' | 'sequoia_slate' | 'light_neumorphic';
 
 export type ToolTab = 
   | 'youtube'
@@ -9,6 +10,21 @@ export type ToolTab =
   | 'video_frame_extractor'
   | 'audio_cutter'
   | 'logs';
+
+export interface DownloadQueueTask {
+  id: string;
+  title: string;
+  sourceUrl: string;
+  format: string;
+  quality: string;
+  progress: number;
+  speed: string;
+  eta: string;
+  size: string;
+  status: 'queued' | 'downloading' | 'processing' | 'completed' | 'paused' | 'failed';
+  timestamp: string;
+  type: 'video' | 'audio' | 'playlist' | 'frame';
+}
 
 export interface VideoInfo {
   id: string;

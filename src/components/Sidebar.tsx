@@ -41,31 +41,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: YoutubeIcon,
       accentColor: 'text-red-500',
       badge: '4K / 60FPS',
-      badgeColor: 'bg-red-100 text-red-700 border-red-200',
+      badgeColor: 'bg-red-500/10 text-red-500 border-red-500/20',
+      shortcut: '⌘1',
     },
     {
       id: 'facebook' as ToolTab,
       label: t.tabFacebook,
       icon: FacebookIcon,
-      accentColor: 'text-blue-600',
+      accentColor: 'text-blue-500',
       badge: 'HD Reels',
-      badgeColor: 'bg-blue-100 text-blue-700 border-blue-200',
+      badgeColor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+      shortcut: '⌘2',
     },
     {
       id: 'playlist_youtube' as ToolTab,
       label: t.tabPlaylist,
       icon: ListVideo,
-      accentColor: 'text-purple-600',
+      accentColor: 'text-purple-500',
       badge: 'Batch',
-      badgeColor: 'bg-purple-100 text-purple-700 border-purple-200',
+      badgeColor: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+      shortcut: '⌘3',
     },
     {
       id: 'audio_download' as ToolTab,
       label: t.tabAudioDownload,
       icon: Music,
-      accentColor: 'text-emerald-600',
+      accentColor: 'text-emerald-500',
       badge: '320kbps',
-      badgeColor: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      badgeColor: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+      shortcut: '⌘4',
     },
   ];
 
@@ -74,17 +78,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'video_frame_extractor' as ToolTab,
       label: t.tabFrameExtractor,
       icon: ImageIcon,
-      accentColor: 'text-sky-600',
+      accentColor: 'text-sky-500',
       badge: 'Lossless',
-      badgeColor: 'bg-sky-100 text-sky-700 border-sky-200',
+      badgeColor: 'bg-sky-500/10 text-sky-500 border-sky-500/20',
+      shortcut: '⌘5',
     },
     {
       id: 'audio_cutter' as ToolTab,
       label: t.tabAudioCutter,
       icon: Scissors,
-      accentColor: 'text-teal-600',
+      accentColor: 'text-teal-500',
       badge: 'Waveform',
-      badgeColor: 'bg-teal-100 text-teal-700 border-teal-200',
+      badgeColor: 'bg-teal-500/10 text-teal-500 border-teal-500/20',
+      shortcut: '⌘6',
     },
   ];
 
@@ -93,9 +99,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'logs' as ToolTab,
       label: t.tabLogs,
       icon: Terminal,
-      accentColor: 'text-indigo-600',
+      accentColor: 'text-indigo-400',
       badge: logCount > 0 ? (logCount > 99 ? '99+' : logCount.toString()) : undefined,
       badgeColor: 'bg-indigo-500 text-white',
+      shortcut: '⌘7',
     },
   ];
 
@@ -106,6 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     accentColor: string;
     badge?: string;
     badgeColor?: string;
+    shortcut?: string;
   }) => {
     const Icon = tool.icon;
     const isActive = activeTab === tool.id;
@@ -115,18 +123,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         key={tool.id}
         id={`tab-btn-${tool.id}`}
         onClick={() => onSelectTab(tool.id)}
-        className={`w-full min-h-[44px] flex items-center justify-between gap-2 px-3 sm:px-3.5 py-2 rounded-2xl text-left font-semibold text-xs sm:text-sm transition-all duration-200 ${
+        className={`w-full min-h-[44px] flex items-center justify-between gap-2 px-3 sm:px-3.5 py-2 rounded-2xl text-left font-semibold text-xs sm:text-sm transition-all duration-200 group ${
           isActive
-            ? 'web-tab-active text-slate-900 bg-[#e6edf5] font-bold shadow-inner'
-            : 'neu-btn hover:text-slate-900 text-slate-600'
+            ? 'web-tab-active font-bold shadow-sm'
+            : 'neu-btn hover:text-emerald-500'
         }`}
       >
         <div className="flex items-center gap-2.5 min-w-0">
           <div
             className={`p-1.5 rounded-xl shrink-0 transition-all ${
               isActive
-                ? 'neu-card-sm text-emerald-600 bg-[#e6edf5] shadow-xs'
-                : 'neu-card-sm text-slate-500'
+                ? 'neu-card-sm text-emerald-500'
+                : 'neu-card-sm text-slate-400 group-hover:text-emerald-400'
             }`}
           >
             <Icon className={`w-4 h-4 ${tool.accentColor}`} />
@@ -134,15 +142,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span className="truncate leading-tight text-xs font-semibold">{tool.label}</span>
         </div>
 
-        {tool.badge && (
-          <span
-            className={`px-1.5 py-0.5 text-[9px] font-extrabold uppercase rounded-md border shrink-0 ${
-              tool.badgeColor || 'bg-slate-200 text-slate-700'
-            }`}
-          >
-            {tool.badge}
-          </span>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {tool.badge && (
+            <span
+              className={`px-1.5 py-0.5 text-[9px] font-extrabold uppercase rounded-md border shrink-0 ${
+                tool.badgeColor || 'bg-slate-700/50 text-slate-300 border-slate-600'
+              }`}
+            >
+              {tool.badge}
+            </span>
+          )}
+          {tool.shortcut && (
+            <span className="hidden xl:inline text-[9px] font-mono text-slate-400 opacity-60 group-hover:opacity-100">
+              {tool.shortcut}
+            </span>
+          )}
+        </div>
       </button>
     );
   };
@@ -155,14 +170,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="space-y-4">
         {/* Category 1: Download Engines */}
         <div className="space-y-1.5">
-          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <span className="flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              <Zap className="w-3.5 h-3.5 text-emerald-500" />
               {lang === 'km' ? 'ម៉ាស៊ីនទាញយក' : 'DOWNLOAD MODULES'}
             </span>
-            <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
+            <span className="flex items-center gap-1 text-[10px] text-emerald-500 font-bold font-mono">
               <Radio className="w-2.5 h-2.5 animate-pulse" />
-              Ready
+              ONLINE
             </span>
           </div>
           <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1.5">
@@ -172,9 +187,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Category 2: Media Studio */}
         <div className="space-y-1.5">
-          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <span className="flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-blue-600" />
+              <Layers className="w-3.5 h-3.5 text-blue-500" />
               {lang === 'km' ? 'ឧបករណ៍កែច្នៃ' : 'STUDIO UTILITIES'}
             </span>
           </div>
@@ -185,7 +200,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Category 3: System Terminal */}
         <div className="space-y-1.5">
-          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="px-2 py-1 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <span>{lang === 'km' ? 'ប្រព័ន្ធ & កំណត់ត្រា' : 'SYSTEM & TELEMETRY'}</span>
           </div>
           <nav className="grid grid-cols-1 gap-1.5">
@@ -195,42 +210,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Desktop / System Bottom Widget */}
-      <div className="pt-3 border-t border-slate-300/70 hidden lg:block space-y-3">
+      <div className="pt-3 border-t border-slate-400/20 hidden lg:block space-y-3">
         {/* Language switch */}
         <button
           id="sidebar-lang-btn"
           onClick={onToggleLang}
-          className="w-full neu-btn flex items-center justify-center gap-2 px-3.5 py-2 text-slate-700 hover:text-emerald-600 text-xs font-bold transition min-h-[38px]"
+          className="w-full neu-btn flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-bold transition min-h-[38px]"
         >
-          <Globe className="w-4 h-4 text-emerald-600" />
+          <Globe className="w-4 h-4 text-emerald-500" />
           <span>{t.languageButton}</span>
         </button>
 
         {/* Downloads folder */}
-        <div className="p-3 rounded-2xl neu-inset text-[11px] text-slate-600 space-y-1.5">
-          <div className="font-bold text-slate-800 flex items-center justify-between">
+        <div className="p-3 rounded-2xl neu-inset text-[11px] space-y-1.5">
+          <div className="font-bold flex items-center justify-between">
             <span className="flex items-center gap-1.5">
-              <FolderOpen className="w-3.5 h-3.5 text-amber-600" />
+              <FolderOpen className="w-3.5 h-3.5 text-amber-500" />
               Save Location
             </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
-              Auto-Sync
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
+              Direct-Mux
             </span>
           </div>
-          <p className="text-slate-500 font-mono text-[10px] truncate bg-white/50 px-2 py-1 rounded border border-slate-200/80">
+          <p className="font-mono text-[10px] truncate px-2 py-1 rounded neu-card-sm">
             ~/Downloads/MediaToolsPro
           </p>
         </div>
 
         {/* System telemetry stats */}
-        <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-500 px-1">
+        <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-400 px-1">
           <div className="flex items-center gap-1 truncate">
-            <Cpu className="w-3 h-3 text-slate-400" />
-            <span>Mux: HTML5</span>
+            <Cpu className="w-3 h-3 text-emerald-400" />
+            <span>WASM: Ready</span>
           </div>
           <div className="flex items-center gap-1 truncate">
-            <HardDrive className="w-3 h-3 text-slate-400" />
-            <span>API: Ready</span>
+            <HardDrive className="w-3 h-3 text-sky-400" />
+            <span>NVENC: Auto</span>
           </div>
         </div>
       </div>
