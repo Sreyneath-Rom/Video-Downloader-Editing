@@ -1,57 +1,78 @@
-# Media Tools Pro (ឧបករណ៍មេឌៀកម្រិតខ្ពស់)
+# Media Studio Pro (ឧបករណ៍មេឌៀកម្រិតខ្ពស់)
 
-A modern multimedia suite for downloading, extracting, and editing video and audio content. Available both as a high-performance **Web Application (React 18 + TypeScript + Tailwind CSS)** and as a standalone **Desktop GUI (`main.py` with Python Tkinter + `yt-dlp` + `OpenCV` + `pydub`)**.
+A modern multimedia suite for downloading, extracting, editing, and processing video, audio, and image content. Available both as a high-performance **Web Application (React 18 + TypeScript + Tailwind CSS)** and as a standalone **Desktop GUI (`main.py` with Python Tkinter + `yt-dlp` + `OpenCV` + `pydub`)**.
 
 ---
 
 ## 📌 Overview
 
-**Media Tools Pro** unifies essential media downloading, stream extraction, video frame capture, and audio trimming into a single, intuitive interface with full bilingual localization in **English** and **Khmer (ភាសាខ្មែរ)**.
+**Media Studio Pro** unifies video downloading, stream extraction, video frame capture, audio trimming, and AI-powered image background removal into a sleek, responsive interface with bilingual localization in **English** and **Khmer (ភាសាខ្មែរ)**.
 
 ### ✨ Key Highlights
-- **Dual Deployment Options**:
-  - 🌐 **Web Suite**: 100% browser-native audio trimming and frame extraction using Web Audio & Canvas APIs.
-  - 💻 **Desktop Edition (`main.py`)**: Native Python Tkinter application powered by `yt-dlp`, `OpenCV (cv2)`, and `pydub`.
-- **Tactile Neumorphic Design**: Soft dual-shadow aesthetic with high-contrast typography and responsive controls.
+- **Comprehensive Media Toolkit**:
+  - 🌐 **Web Suite**: 100% browser-native AI background removal, audio trimming, and frame extraction using Web Audio, Canvas, and WebAssembly APIs.
+  - 💻 **Desktop Edition (`main.py`)**: Native Python desktop application powered by `yt-dlp`, `OpenCV (cv2)`, and `pydub`.
+- **Streamlined Icon-Only Header**: Fast tool switching with active highlights, real-time engine status indicator, and responsive mobile tray.
 - **Full Bilingual Localization**: Seamless instant switching between English and Khmer (ភាសាខ្មែរ).
 - **Interactive Audio Waveform Visualizer**: Drag-and-click interval selection, loop auditions, and lossless WAV/MP3 exports.
-- **Precision Video Snapshotting**: Frame-by-frame seeking (`-1s`, `-0.1s`, `+0.1s`, `+1s`) with instant PNG/JPEG frame generation.
+- **AI Image Background Removal & Matting**: Instant subject extraction with dual-pane split comparison, custom backdrops, solid color fills, and manual brush refinement.
+- **Precision Video Snapshotting**: Frame-by-frame seeking (`-1s`, `-0.1s`, `+0.1s`, `+1s`) with instant PNG/JPEG snapshot generation.
+- **Dark & Light Studio Themes**: Contrast-optimized themes designed for extended creative sessions.
 
 ---
 
 ## 🚀 Features & Tools
 
-### 1. 📺 YouTube Video Downloader
-Download high-resolution video streams from YouTube with full metadata previews.
-- **Process**: Paste a YouTube link → select resolution (`1080p Full HD`, `720p HD`, `480p SD`, `360p`) → set destination folder → Start Download.
+### 1. 📺 YouTube / Universal Video Downloader
+Download high-resolution video streams from YouTube with complete metadata previews.
+- **Options**: Resolution selector (`4K 2160p`, `1440p 2K`, `1080p Full HD`, `720p HD`, `480p SD`, `360p`), custom format choices, and live download simulation.
 
-### 2. 📘 Facebook Video Downloader
-Save public videos, reels, and clips from Facebook.
-- **Process**: Paste Facebook video/reel URL → choose HD or SD format → set destination → Start Download.
+### 2. 🎵 TikTok Video & Audio Downloader
+Save clean, watermark-free TikTok videos, high-fidelity audio, and covers.
+- **Options**: `Clean HD Video (No Watermark)`, `Original Audio MP3 (320kbps)`, or `HD Cover Image (JPG)`.
 
-### 3. 📑 YouTube Playlist Downloader
-Batch download all video tracks in a public YouTube playlist with individual progress trackers.
-- **Process**: Paste playlist link → click **Fetch Playlist** → select/deselect specific items → choose format (Video MP4 / Audio MP3) → Download Selected.
+### 3. 📸 Instagram Reels & Media Downloader
+Extract Instagram Reels, IGTV clips, carousel photos, and stories.
+- **Options**: `1080p Full HD Video`, `Original High-Res Photo (JPG)`, or `Audio Track (MP3)`.
 
-### 4. 🎵 Audio Stream Downloader
+### 4. 📘 Facebook Video Downloader
+Save public videos, reels, and clips from Facebook in HD or SD quality.
+- **Options**: `1080p HD Video`, `720p SD Video`, or direct audio extraction.
+
+### 5. 📑 YouTube Playlist Batch Downloader
+Batch process and download entire YouTube playlists with item selection checklists.
+- **Options**: Selective queueing, batch format selector (`Video MP4` or `Audio MP3`), and individual progress bars.
+
+### 6. 🎧 Audio Stream Downloader
 Extract pure audio tracks from online media sources with studio-grade bitrate controls.
-- **Process**: Paste URL → choose container (`MP3`, `M4A / AAC`, `WAV`) → select bitrate (`320 kbps`, `192 kbps`, `128 kbps`) → Download Audio.
+- **Options**: Containers (`MP3`, `M4A / AAC`, `WAV`, `FLAC`), bitrates (`320 kbps`, `256 kbps`, `192 kbps`, `128 kbps`).
 
-### 5. 🎞️ Video Frame Extractor
-Extract lossless, high-resolution snapshots from any video file without quality degradation.
-- **Process**: Upload/drag video (`MP4`, `WebM`, `MKV`, `AVI`, `MOV`) → scrub or seek to timestamp → click **Extract Image** → preview and download individual stills or batch ZIP.
+### 7. ✂️ AI Image Background Remover & Matting
+Remove backgrounds from photos locally using browser-based AI edge-detection and smart matting.
+- **Features**:
+  - Instant background cutout with adjustable edge sensitivity and smoothing.
+  - Dual-pane interactive split-slider before/after comparison.
+  - Background replacements: transparent PNG, solid colors, gradient presets, or custom uploaded image backdrops.
+  - Manual brush refinement: Erase and Restore brushes with adjustable brush size and softness.
 
-### 6. ✂️ Interactive Audio Waveform Cutter
-Trim and slice audio tracks locally with interactive waveform visualization.
-- **Process**: Upload audio file (`MP3`, `WAV`, `OGG`, `FLAC`, `M4A`) → click waveform or enter `HH:MM:SS` timestamps → audition via **Play Selection** or **Loop** → export to WAV or MP3.
+### 8. 🎞️ Video Frame Extractor
+Extract lossless snapshots from any local video file without quality degradation.
+- **Features**: Scrubbing controls, frame micro-stepping, instant PNG/JPEG frame export, and batch image gallery.
+
+### 9. 🎼 Interactive Audio Waveform Cutter
+Trim, slice, and fade audio tracks locally with visual waveform feedback.
+- **Features**: Visual waveform scrubber, timestamp inputs (`HH:MM:SS`), audition playback, looping, and lossless WAV/MP3 export.
+
+### 10. 📜 Terminal Activity Logs
+Real-time diagnostic console logging background operations, download metrics, extraction events, and system errors.
 
 ---
 
 ## 🌐 Bilingual Support (English / ភាសាខ្មែរ)
 
-Toggle between English and Khmer at any time using the header language toggle:
-- **English**: Standard interface terms and technical tooltips.
-- **ភាសាខ្មែរ (Khmer)**: Native translations for all tabs, buttons, inputs, placeholders, and status alerts.
+Toggle between English and Khmer at any time via the header globe button:
+- **English**: Standard technical terms and tooltips.
+- **ភាសាខ្មែរ (Khmer)**: Native translations for all tabs, controls, placeholders, tooltips, and status notifications.
 
 ---
 
@@ -60,7 +81,7 @@ Toggle between English and Khmer at any time using the header language toggle:
 ### 🌐 Option A: Web Application (React + Vite + TypeScript)
 
 #### Prerequisites
-- Node.js 18+ and npm / bun
+- Node.js 18+ and npm / bun / pnpm
 
 #### Quickstart:
 ```bash
@@ -81,9 +102,9 @@ npm run build
 
 ### 🖥️ Option B: Desktop Edition (`main.py` Python GUI)
 
-The repository includes a modern standalone Python desktop application (`main.py`) powered by `yt-dlp`, `OpenCV (cv2)`, `Pillow`, and `pydub`.
+The repository includes a standalone Python desktop application (`main.py`) powered by `yt-dlp`, `OpenCV (cv2)`, `Pillow`, and `pydub`.
 
-#### New Desktop Capabilities:
+#### Desktop Capabilities:
 - 🌐 **Universal Downloader**: Downloads from YouTube (4K / 1080p muxing), Facebook, TikTok, Instagram, Twitter/X, Reddit, Bilibili, and 1000+ online video sources.
 - 📑 **Interactive Playlist Batching**: Analyzes playlist contents, displays an interactive Treeview checklist with video titles & durations, and downloads queues with individual progress indicators.
 - 🎵 **Audio Stream Extractor**: Studio-grade MP3 (320kbps), M4A, Lossless WAV, FLAC, and OPUS with embedded metadata & ID3 tags.
@@ -124,24 +145,29 @@ python main.py
 │   ├── types/
 │   │   └── index.ts           # Shared TypeScript interfaces & types
 │   ├── components/
-│   │   ├── Header.tsx         # Top banner with language selector
-│   │   ├── Sidebar.tsx        # Navigation sidebar with tactile tab buttons
-│   │   ├── YouTubeDownloader.tsx # YouTube downloader component
-│   │   ├── FacebookDownloader.tsx # Facebook downloader component
-│   │   ├── PlaylistDownloader.tsx # Batch playlist processor
-│   │   ├── AudioDownloader.tsx   # Audio extraction & bitrate selector
+│   │   ├── Header.tsx         # Icon-only streamlined navigation header & theme switcher
+│   │   ├── Sidebar.tsx        # Navigation sidebar with categorized tool tabs
+│   │   ├── YouTubeDownloader.tsx # YouTube & Universal 4K downloader
+│   │   ├── TikTokDownloader.tsx  # TikTok watermark-free downloader
+│   │   ├── InstagramDownloader.tsx # Instagram Reels & Media downloader
+│   │   ├── FacebookDownloader.tsx  # Facebook video downloader
+│   │   ├── PlaylistDownloader.tsx  # Batch playlist processor
+│   │   ├── AudioDownloader.tsx     # Audio stream extraction & bitrate selector
+│   │   ├── ImageBackgroundRemover.tsx # AI background cutout & canvas matting
 │   │   ├── VideoFrameExtractor.tsx # Frame snapshot extractor & gallery
-│   │   ├── AudioCutter.tsx       # Waveform canvas cutter & playback
-│   │   └── icons.tsx          # SVG icons
+│   │   ├── AudioCutter.tsx         # Waveform canvas cutter & audio export
+│   │   ├── LogsPanel.tsx           # Real-time terminal activity logs
+│   │   └── icons.tsx               # Brand and utility vector icons
 │   └── utils/
 │       ├── audioProcessing.ts # Web Audio buffer decode, waveform & WAV encoder
 │       ├── videoProcessing.ts # HTML5 Canvas frame snapshot & export helpers
 │       ├── mediaDownloader.ts # Media stream simulation & validation utilities
+│       ├── logger.ts          # Centralized event logging dispatcher
 │       └── time.ts            # Timestamp parsers & time formatters
 ```
 
 ---
 
-## 🔒 Privacy & Security
+## 🔒 Privacy & Local Processing
 
-All audio trimming, waveform decoding, and video frame captures in the web app execute **100% locally in your browser** using the Web Audio API and HTML5 Canvas. Your uploaded files are never uploaded to any external server.
+All audio trimming, waveform decoding, video frame extractions, and AI image background removals execute **100% locally in your browser** using the Web Audio API, WebAssembly, and HTML5 Canvas. Your uploaded files are never uploaded to any external server.
