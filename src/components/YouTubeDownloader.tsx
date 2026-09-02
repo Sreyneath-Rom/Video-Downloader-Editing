@@ -4,7 +4,6 @@ import { translations } from '../translations';
 import { fetchYouTubeInfo, simulateDownloadWithMetrics } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
 import { YoutubeIcon } from './icons';
-import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   Folder,
   Download,
@@ -18,9 +17,10 @@ import {
   Clipboard,
   XCircle,
   Eye,
-  Sliders,
   Server,
-  Globe,
+  Video,
+  Film,
+  Music,
 } from 'lucide-react';
 
 interface YouTubeDownloaderProps {
@@ -34,13 +34,12 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
 }) => {
   const t = translations[lang];
 
-  const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+  const [url, setUrl] = useState<string>('');
   const [destination, setDestination] = useState<string>('Downloads/MediaToolsPro');
-  const [selectedQuality, setSelectedQuality] = useState<string>('best');
+  const [qualityMode, setQualityMode] = useState<'hd' | 'sd' | 'audio'>('hd');
   const [optSubtitles, setOptSubtitles] = useState<boolean>(false);
   const [optThumbnail, setOptThumbnail] = useState<boolean>(true);
   const [optMetadata, setOptMetadata] = useState<boolean>(true);
-  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
@@ -54,16 +53,6 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
 
   const cancelFnRef = useRef<(() => void) | null>(null);
-
-  const qualityPresets = [
-    { value: 'best', label: 'Best Video + Audio Mux (Auto 4K/1080p)' },
-    { value: '1080p', label: '1080p Full HD (MP4)' },
-    { value: '720p', label: '720p High Definition (MP4)' },
-    { value: '480p', label: '480p Standard (MP4)' },
-    { value: '360p', label: '360p Low Bandwidth (MP4)' },
-    { value: 'audio_mp3', label: 'Extract Audio Only (MP3 320kbps)' },
-    { value: 'audio_wav', label: 'Lossless Master Audio (WAV)' },
-  ];
 
   const handlePaste = async () => {
     try {
@@ -124,6 +113,9 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
     }
 
     const title = videoInfo?.title || 'Universal_Media_Stream';
+    const format = qualityMode === 'audio' ? 'mp3' : 'mp4';
+    const estimatedSizeMB = qualityMode === 'audio' ? 12.4 : qualityMode === 'hd' ? 95.8 : 45.2;
+
     setIsDownloading(true);
     setProgress(0);
     setStatusType('info');
@@ -134,20 +126,14 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
       progress: 0,
       statusText: `Downloading: ${title.substring(0, 30)}...`,
       activeItem: title,
-      speed: '10.5 MB/s',
+      speed: '12.5 MB/s',
       eta: '00:08',
       downloadedBytes: '0.0 MB',
-      totalBytes: '85.5 MB',
+      totalBytes: `${estimatedSizeMB} MB`,
     });
 
-    const format = selectedQuality.includes('MP3')
-      ? 'mp3'
-      : selectedQuality.includes('WAV')
-      ? 'wav'
-      : 'mp4';
-
     const cleanup = simulateDownloadWithMetrics(
-      85.5,
+      estimatedSizeMB,
       title,
       format,
       (m) => {
@@ -250,60 +236,103 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
           </div>
         </div>
 
-        {/* Quality Preset Selector */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5 text-slate-500" />
-              {t.quality}
-            </label>
-            <select
-              id="youtube-quality-select"
-              value={selectedQuality}
-              onChange={(e) => setSelectedQuality(e.target.value)}
-              className="w-full neu-input px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 min-h-[44px]"
+        {/* Quality Mode Cards (Facebook UI Style) */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+            {t.quality}
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              type="button"
+              id="youtube-quality-hd"
+              onClick={() => setQualityMode('hd')}
+              className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
+                qualityMode === 'hd'
+                  ? 'neu-pill-inset text-red-600 dark:text-red-400 bg-[#e6edf5] dark:bg-[#0c121e] border-red-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-red-500'
+              }`}
             >
-              {qualityPresets.map((qp) => (
-                <option key={qp.value} value={qp.value}>
-                  {qp.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="p-2 rounded-xl neu-card-sm text-red-500 shrink-0">
+                <Video className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold">{t.ytQualityHd}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">Best 1080p / 4K MP4</div>
+              </div>
+            </button>
 
-          {/* Destination Path Input */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
-              {t.destination}
-            </label>
-            <div className="flex gap-2">
-              <input
-                id="youtube-dest-input"
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 font-mono min-h-[44px]"
-              />
-              <button
-                id="youtube-browse-btn"
-                onClick={() => {
-                  const custom = prompt(
-                    lang === 'km' ? 'បញ្ចូលទីតាំងរក្សាទុក:' : 'Enter custom download directory:',
-                    destination
-                  );
-                  if (custom) setDestination(custom);
-                }}
-                className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-emerald-600 transition flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <Folder className="w-4 h-4 text-emerald-600" />
-                <span>{t.browse}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              id="youtube-quality-sd"
+              onClick={() => setQualityMode('sd')}
+              className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
+                qualityMode === 'sd'
+                  ? 'neu-pill-inset text-sky-600 dark:text-sky-400 bg-[#e6edf5] dark:bg-[#0c121e] border-sky-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-sky-500'
+              }`}
+            >
+              <div className="p-2 rounded-xl neu-card-sm text-sky-600 shrink-0">
+                <Film className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold">{t.ytQualitySd}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">Fast 720p MP4</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              id="youtube-quality-audio"
+              onClick={() => setQualityMode('audio')}
+              className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
+                qualityMode === 'audio'
+                  ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500'
+              }`}
+            >
+              <div className="p-2 rounded-xl neu-card-sm text-emerald-600 shrink-0">
+                <Music className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold">{t.ytQualityAudio}</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">MP3 320kbps Audio</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Destination Path Input */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+            {t.destination}
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="youtube-dest-input"
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 font-mono min-h-[44px]"
+            />
+            <button
+              id="youtube-browse-btn"
+              onClick={() => {
+                const custom = prompt(
+                  lang === 'km' ? 'បញ្ចូលទីតាំងរក្សាទុក:' : 'Enter custom download directory:',
+                  destination
+                );
+                if (custom) setDestination(custom);
+              }}
+              className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition flex items-center justify-center gap-1.5 shrink-0"
+            >
+              <Folder className="w-4 h-4 text-emerald-500" />
+              <span>{t.browse}</span>
+            </button>
           </div>
         </div>
 
         {/* Checkbox Options */}
-        <div className="p-3.5 rounded-2xl neu-inset grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-semibold text-slate-700">
+        <div className="p-3.5 rounded-2xl neu-inset grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -444,33 +473,16 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
                 id="youtube-direct-server-link"
                 href={`/api/media/download?title=${encodeURIComponent(
                   videoInfo?.title || 'YouTube_Media'
-                )}&format=${
-                  selectedQuality.includes('MP3')
-                    ? 'mp3'
-                    : selectedQuality.includes('WAV')
-                    ? 'wav'
-                    : 'mp4'
-                }&quality=${encodeURIComponent(selectedQuality)}`}
+                )}&format=${qualityMode === 'audio' ? 'mp3' : 'mp4'}&quality=${qualityMode}`}
                 download
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 px-4 neu-btn text-emerald-700 hover:text-emerald-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
-                title="Direct Server Download (Bypasses iframe restrictions)"
+                title="Direct Server Download"
               >
                 <Server className="w-4 h-4 text-emerald-600" />
                 <span className="hidden sm:inline">Direct Link</span>
               </a>
-
-              <button
-                type="button"
-                id="youtube-mirrors-btn"
-                onClick={() => setShowAssistModal(true)}
-                className="py-3 px-4 neu-btn text-purple-700 hover:text-purple-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
-                title="Open Fast Mirrors & Download Options"
-              >
-                <Globe className="w-4 h-4 text-purple-600" />
-                <span className="hidden sm:inline">Options</span>
-              </button>
             </>
           )}
 
@@ -489,23 +501,6 @@ export const YouTubeDownloader: React.FC<YouTubeDownloaderProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Download Assist & Mirror Options Modal */}
-      <DownloadAssistModal
-        isOpen={showAssistModal}
-        onClose={() => setShowAssistModal(false)}
-        lang={lang}
-        mediaUrl={url}
-        mediaTitle={videoInfo?.title || 'YouTube_Stream'}
-        format={
-          selectedQuality.includes('MP3')
-            ? 'mp3'
-            : selectedQuality.includes('WAV')
-            ? 'wav'
-            : 'mp4'
-        }
-        quality={selectedQuality}
-      />
     </div>
   );
 };

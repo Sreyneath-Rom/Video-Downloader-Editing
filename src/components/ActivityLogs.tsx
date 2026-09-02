@@ -83,16 +83,16 @@ export const ActivityLogs: React.FC<ActivityLogsProps> = ({ lang }) => {
             <button
               id="copy-logs-btn"
               onClick={handleCopyLogs}
-              className="neu-btn px-3 py-1.5 text-xs font-semibold text-slate-700 flex items-center gap-1.5 hover:text-indigo-600 transition"
+              className="neu-btn px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 hover:text-indigo-500 transition"
               title={t.copyLogs}
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : t.copyLogs}</span>
             </button>
             <button
               id="clear-logs-btn"
               onClick={handleClearLogs}
-              className="neu-btn px-3 py-1.5 text-xs font-semibold text-rose-600 flex items-center gap-1.5 hover:bg-rose-50 transition"
+              className="neu-btn px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 hover:bg-rose-500/10 transition"
               title={t.clearLogs}
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -102,10 +102,10 @@ export const ActivityLogs: React.FC<ActivityLogsProps> = ({ lang }) => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">Filter:</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">Filter:</span>
             {(['all', 'info', 'success', 'warn', 'error'] as const).map((lvl) => (
               <button
                 key={lvl}
@@ -113,7 +113,7 @@ export const ActivityLogs: React.FC<ActivityLogsProps> = ({ lang }) => {
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                   filter === lvl
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-slate-200/70 text-slate-600 hover:bg-slate-300'
+                    : 'bg-slate-200/70 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
                 {lvl === 'all' ? t.filterAll : lvl.toUpperCase()}
@@ -124,7 +124,7 @@ export const ActivityLogs: React.FC<ActivityLogsProps> = ({ lang }) => {
           <button
             onClick={() => setAutoScroll(!autoScroll)}
             className={`text-xs font-medium flex items-center gap-1 px-2 py-1 rounded ${
-              autoScroll ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-slate-500 hover:text-slate-700'
+              autoScroll ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
             }`}
           >
             <ArrowDown className="w-3 h-3" />
@@ -134,7 +134,7 @@ export const ActivityLogs: React.FC<ActivityLogsProps> = ({ lang }) => {
       </div>
 
       {/* Terminal window */}
-      <div className="bg-[#0f172a] rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-800 font-mono text-xs text-slate-300 space-y-1.5 min-h-[380px] max-h-[540px] overflow-y-auto">
+      <div className="bg-[#070b12] rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-800/90 font-mono text-xs text-slate-300 space-y-1.5 min-h-[380px] max-h-[540px] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-800/80 text-[11px] text-slate-500">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></div>

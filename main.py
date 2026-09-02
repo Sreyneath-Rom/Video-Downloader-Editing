@@ -50,6 +50,11 @@ except ImportError:
     AudioSegment = None
 
 try:
+    from rembg import remove as rembg_remove
+except ImportError:
+    rembg_remove = None
+
+try:
     import urllib.request
     from io import BytesIO
 except ImportError:
@@ -66,15 +71,19 @@ TRANSLATIONS = {
         "app_subtitle": "Universal Video Downloader & Multimedia Processing Studio",
         "version": "v3.0 Desktop Edition",
         "tab_universal": " Universal / YouTube ",
+        "tab_tiktok": " TikTok HD ",
+        "tab_instagram": " Instagram Reels ",
         "tab_facebook": " Facebook & Social ",
         "tab_playlist": " Batch Playlist ",
         "tab_audio": " Audio Extractor ",
+        "tab_remove_bg": " Remove BG (AI) ",
         "tab_frame": " Frame Extractor ",
         "tab_cutter": " Audio Cutter ",
         "tab_logs": " Activity Logs ",
         
         # Common
         "url_label": "Media / Video URL:",
+        "url_placeholder": "Paste a video URL (e.g., https://youtube.com/watch?v=...)",
         "dest_label": "Save Destination Directory:",
         "browse": "Browse...",
         "analyze": "Analyze URL",
@@ -105,6 +114,30 @@ TRANSLATIONS = {
         "opt_subtitles": "Download Subtitles (if available)",
         "opt_thumbnail": "Embed High-Res Thumbnail",
         "opt_metadata": "Embed Metadata Tags",
+
+        # TikTok
+        "tiktok_title": "TikTok No-Watermark HD Downloader",
+        "tiktok_desc": "Download clean high-definition TikTok videos, sound tracks, and slideshows without watermarks.",
+        "tiktok_opt_nowm": "Clean Video (No Watermark)",
+        "tiktok_opt_wm": "Original Video (With Watermark)",
+        "tiktok_opt_sound": "Original Sound Track (MP3)",
+
+        # Instagram
+        "ig_title": "Instagram Reels, Posts & Stories Downloader",
+        "ig_desc": "Download original high-bitrate Reels videos, carousel photos, and video posts from Instagram.",
+        "ig_opt_reels": "Full HD Video Reel (MP4)",
+        "ig_opt_audio": "Audio Track (MP3)",
+
+        # Remove Background
+        "bg_title": "AI Image Background Remover & Matting Studio",
+        "bg_desc": "Remove image backgrounds with neural matting or color thresholding and replace with custom backdrops.",
+        "bg_open_btn": "Open Source Image...",
+        "bg_remove_btn": "Remove Background Now",
+        "bg_save_btn": "Save Cutout File...",
+        "bg_mode_transparent": "Transparent Alpha PNG",
+        "bg_mode_white": "Solid White Studio",
+        "bg_mode_black": "Solid Black Studio",
+        "bg_mode_green": "Chroma Key Green",
 
         # Facebook & Social
         "fb_title": "Facebook, Reels & Social Clips Downloader",
@@ -152,15 +185,19 @@ TRANSLATIONS = {
         "app_subtitle": "កម្មវិធីទាញយកវីដេអូ និងកែច្នៃមេឌៀកម្រិតខ្ពស់",
         "version": "v3.0 កំណែ Desktop",
         "tab_universal": " ទាញយកវីដេអូទូទៅ / YouTube ",
+        "tab_tiktok": " TikTok គ្មាន Watermark ",
+        "tab_instagram": " Instagram Reels ",
         "tab_facebook": " Facebook & Social ",
         "tab_playlist": " បញ្ជីចាក់ (Playlist) ",
         "tab_audio": " ទាញយកសំឡេង ",
+        "tab_remove_bg": " លុបផ្ទៃខាងក្រោយរូបភាព ",
         "tab_frame": " ចាប់យករូបភាពពីវីដេអូ ",
         "tab_cutter": " កាត់តសំឡេង ",
         "tab_logs": " កំណត់ត្រាសកម្មភាព ",
         
         # Common
         "url_label": "តំណភ្ជាប់វីដេអូ ឬមេឌៀ (URL):",
+        "url_placeholder": "បិទភ្ជាប់ URL វីដេអូ (ឧ. https://youtube.com/watch?v=...)",
         "dest_label": "ទីតាំងរក្សាទុកឯកសារ:",
         "browse": "ជ្រើសរើស...",
         "analyze": "វិភាគតំណភ្ជាប់",
@@ -191,6 +228,30 @@ TRANSLATIONS = {
         "opt_subtitles": "ទាញយកអក្សររត់ពីក្រោម (Subtitles)",
         "opt_thumbnail": "បញ្ចូលរូបភាពគម្រប (Thumbnail)",
         "opt_metadata": "បញ្ចូលព័ត៌មាន Metadata",
+
+        # TikTok
+        "tiktok_title": "ទាញយកវីដេអូ TikTok គ្មាន Watermark",
+        "tiktok_desc": "ទាញយកវីដេអូ TikTok កម្រិតច្បាស់ HD គ្មានជាប់ផ្លាកសញ្ញា Watermark និងទាញយកសំឡេងសុទ្ធ។",
+        "tiktok_opt_nowm": "វីដេអូគ្មាន Watermark (Clean HD)",
+        "tiktok_opt_wm": "វីដេអូដើម (មាន Watermark)",
+        "tiktok_opt_sound": "សំឡេងសុទ្ធ Original Sound (MP3)",
+
+        # Instagram
+        "ig_title": "ទាញយក Instagram Reels & Posts",
+        "ig_desc": "ទាញយក Reels កម្រិតច្បាស់ Full HD 1080p រូបភាព Carousel និងវីដេអូ IG យ៉ាងរហ័ស។",
+        "ig_opt_reels": "វីដេអូ Reels Full HD (MP4)",
+        "ig_opt_audio": "សំឡេង Reels (MP3)",
+
+        # Remove Background
+        "bg_title": "ឧបករណ៍លុបផ្ទៃខាងក្រោយរូបភាព (AI BG Remover)",
+        "bg_desc": "លុបផ្ទៃខាងក្រោយរូបភាពស្វ័យប្រវត្តិកម្រិត Alpha Matting និងជំនួសផ្ទៃខាងក្រោយថ្មី។",
+        "bg_open_btn": "បើករូបភាពក្នុងកុំព្យូទ័រ...",
+        "bg_remove_btn": "ចាប់ផ្តើមលុបផ្ទៃខាងក្រោយ",
+        "bg_save_btn": "រក្សាទុកឯកសារ Cutout...",
+        "bg_mode_transparent": "ផ្ទៃថ្លា Transparent (PNG)",
+        "bg_mode_white": "ផ្ទៃពណ៌ស (Studio White)",
+        "bg_mode_black": "ផ្ទៃពណ៌ខ្មៅ (Studio Black)",
+        "bg_mode_green": "ផ្ទៃពណ៌បៃតង Chroma Key",
 
         # Facebook & Social
         "fb_title": "ទាញយកវីដេអូ និង Reels ពី Facebook",
@@ -269,6 +330,13 @@ class MediaToolsProApp:
         
         self.playlist_items = []
         self.thumbnail_image_ref = None
+
+        # Remove background state
+        self.bg_image_path = None
+        self.bg_orig_image = None
+        self.bg_processed_image = None
+        self.bg_preview_photo = None
+        self.bg_orig_preview_photo = None
 
         # Check dependencies
         self.has_ffmpeg = self._check_ffmpeg()
@@ -386,32 +454,47 @@ class MediaToolsProApp:
         self.notebook.add(self.tab_yt, text=self.t["tab_universal"])
         self._build_universal_tab()
 
-        # Tab 2: Facebook & Social
+        # Tab 2: TikTok Downloader
+        self.tab_tiktok = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.tab_tiktok, text=self.t["tab_tiktok"])
+        self._build_tiktok_tab()
+
+        # Tab 3: Instagram Downloader
+        self.tab_ig = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.tab_ig, text=self.t["tab_instagram"])
+        self._build_instagram_tab()
+
+        # Tab 4: Facebook & Social
         self.tab_fb = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_fb, text=self.t["tab_facebook"])
         self._build_facebook_tab()
 
-        # Tab 3: Playlist Batch
+        # Tab 5: Playlist Batch
         self.tab_pl = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_pl, text=self.t["tab_playlist"])
         self._build_playlist_tab()
 
-        # Tab 4: Audio Downloader
+        # Tab 6: Audio Downloader
         self.tab_aud = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_aud, text=self.t["tab_audio"])
         self._build_audio_tab()
 
-        # Tab 5: Frame Extractor
+        # Tab 7: Remove Background Studio
+        self.tab_bg = ttk.Frame(self.notebook, padding=16)
+        self.notebook.add(self.tab_bg, text=self.t["tab_remove_bg"])
+        self._build_remove_bg_tab()
+
+        # Tab 8: Frame Extractor
         self.tab_frame = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_frame, text=self.t["tab_frame"])
         self._build_frame_tab()
 
-        # Tab 6: Audio Cutter
+        # Tab 9: Audio Cutter
         self.tab_cutter = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_cutter, text=self.t["tab_cutter"])
         self._build_cutter_tab()
 
-        # Tab 7: Logs Console
+        # Tab 10: Logs Console
         self.tab_logs = ttk.Frame(self.notebook, padding=16)
         self.notebook.add(self.tab_logs, text=self.t["tab_logs"])
         self._build_logs_tab()
@@ -431,12 +514,15 @@ class MediaToolsProApp:
         
         # Update Notebook tab titles
         self.notebook.tab(0, text=self.t["tab_universal"])
-        self.notebook.tab(1, text=self.t["tab_facebook"])
-        self.notebook.tab(2, text=self.t["tab_playlist"])
-        self.notebook.tab(3, text=self.t["tab_audio"])
-        self.notebook.tab(4, text=self.t["tab_frame"])
-        self.notebook.tab(5, text=self.t["tab_cutter"])
-        self.notebook.tab(6, text=self.t["tab_logs"])
+        self.notebook.tab(1, text=self.t["tab_tiktok"])
+        self.notebook.tab(2, text=self.t["tab_instagram"])
+        self.notebook.tab(3, text=self.t["tab_facebook"])
+        self.notebook.tab(4, text=self.t["tab_playlist"])
+        self.notebook.tab(5, text=self.t["tab_audio"])
+        self.notebook.tab(6, text=self.t["tab_remove_bg"])
+        self.notebook.tab(7, text=self.t["tab_frame"])
+        self.notebook.tab(8, text=self.t["tab_cutter"])
+        self.notebook.tab(9, text=self.t["tab_logs"])
 
         self.log_message(f"🌐 Language switched to: {'Khmer (ភាសាខ្មែរ)' if self.lang == 'km' else 'English'}")
 
@@ -673,7 +759,225 @@ class MediaToolsProApp:
         self._execute_ytdlp_download(url, ydl_opts, self.yt_download_btn, self.yt_cancel_btn)
 
     # =============================================================
-    # Tab 2: Facebook & Social Downloader
+    # Tab 2: TikTok No-Watermark Downloader
+    # =============================================================
+    def _build_tiktok_tab(self):
+        f = self.tab_tiktok
+        
+        # Section Header
+        tk.Label(f, text=self.t["tiktok_title"], font=("Segoe UI", 12, "bold"), bg=self.c_bg).pack(anchor="w")
+        tk.Label(f, text=self.t["tiktok_desc"], font=("Segoe UI", 9), bg=self.c_bg, fg=self.c_text_muted).pack(anchor="w", pady=(0, 10))
+
+        # URL Input
+        tk.Label(f, text=self.t["url_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w")
+        url_box = tk.Frame(f, bg=self.c_bg)
+        url_box.pack(fill="x", pady=(2, 10))
+
+        self.tiktok_url_var = tk.StringVar()
+        self.tiktok_url_entry = tk.Entry(url_box, textvariable=self.tiktok_url_var, font=("Consolas", 10), relief="solid", bd=1)
+        self.tiktok_url_entry.pack(side="left", fill="x", expand=True, ipady=5)
+
+        tk.Button(
+            url_box, text="📋 Paste", bg="#ffffff", fg=self.c_text_dark, relief="solid", bd=1,
+            command=lambda: self._paste_to_entry(self.tiktok_url_entry)
+        ).pack(side="left", padx=(6, 0), ipadx=6)
+
+        self.tiktok_analyze_btn = tk.Button(
+            url_box, text=f"🔍 {self.t['analyze']}", bg="#0ea5e9", fg="#ffffff", font=("Segoe UI", 9, "bold"),
+            relief="flat", cursor="hand2", command=lambda: self._start_analysis(self.tiktok_url_var.get(), self._on_tiktok_analyzed)
+        )
+        self.tiktok_analyze_btn.pack(side="left", padx=(6, 0), ipadx=10)
+
+        # TikTok Info Card
+        self.tiktok_info_card = tk.Frame(f, bg="#ffffff", relief="solid", bd=1, padx=12, pady=10)
+        self.tiktok_info_card.pack(fill="x", pady=(0, 10))
+
+        self.tiktok_thumb_lbl = tk.Label(self.tiktok_info_card, text="[TikTok]", bg="#e2e8f0", width=16, height=5)
+        self.tiktok_thumb_lbl.pack(side="left", padx=(0, 12))
+
+        info_text_frame = tk.Frame(self.tiktok_info_card, bg="#ffffff")
+        info_text_frame.pack(side="left", fill="both", expand=True)
+
+        self.tiktok_video_title = tk.Label(info_text_frame, text="No TikTok analyzed yet", font=("Segoe UI", 10, "bold"), bg="#ffffff", wraplength=560, justify="left")
+        self.tiktok_video_title.pack(anchor="w")
+
+        self.tiktok_video_meta = tk.Label(info_text_frame, text="Creator: -- • Duration: --", font=("Segoe UI", 9), bg="#ffffff", fg=self.c_text_muted)
+        self.tiktok_video_meta.pack(anchor="w", pady=(4, 0))
+
+        # Format / Watermark Option
+        tk.Label(f, text=self.t["preset_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w", pady=(2, 2))
+        self.tiktok_mode_var = tk.StringVar(value="nowm")
+        radio_box = tk.Frame(f, bg=self.c_bg)
+        radio_box.pack(fill="x", pady=(0, 10))
+
+        tk.Radiobutton(radio_box, text=self.t["tiktok_opt_nowm"], variable=self.tiktok_mode_var, value="nowm", bg=self.c_bg).pack(side="left", padx=(0, 16))
+        tk.Radiobutton(radio_box, text=self.t["tiktok_opt_wm"], variable=self.tiktok_mode_var, value="wm", bg=self.c_bg).pack(side="left", padx=(0, 16))
+        tk.Radiobutton(radio_box, text=self.t["tiktok_opt_sound"], variable=self.tiktok_mode_var, value="audio", bg=self.c_bg).pack(side="left")
+
+        # Destination Folder
+        dest_box = tk.Frame(f, bg=self.c_bg)
+        dest_box.pack(fill="x", pady=(0, 12))
+        tk.Label(dest_box, text=self.t["dest_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w")
+        dest_in = tk.Frame(dest_box, bg=self.c_bg)
+        dest_in.pack(fill="x", pady=(2, 0))
+        self.tiktok_dest_entry = tk.Entry(dest_in, font=("Segoe UI", 9), relief="solid", bd=1)
+        self.tiktok_dest_entry.insert(0, os.path.expanduser("~/Downloads"))
+        self.tiktok_dest_entry.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(dest_in, text=f"📁 {self.t['browse']}", bg="#ffffff", fg=self.c_text_dark, relief="solid", bd=1,
+                  command=lambda: self._browse_folder(self.tiktok_dest_entry)).pack(side="left", padx=(6, 0), ipadx=8)
+
+        # Download Button
+        self.tiktok_btn = tk.Button(
+            f, text=f"⚡ {self.t['download']} TikTok (Clean HD)", bg="#000000", fg="#00f2fe", font=("Segoe UI", 11, "bold"),
+            relief="flat", cursor="hand2", padx=20, pady=8, command=self._start_tiktok_download
+        )
+        self.tiktok_btn.pack(fill="x")
+
+    def _on_tiktok_analyzed(self, info):
+        title = info.get("title", "TikTok Video")
+        uploader = info.get("uploader", info.get("uploader_id", "TikTok Creator"))
+        duration = str(timedelta(seconds=int(info.get("duration", 0)))) if info.get("duration") else "00:15"
+        self.tiktok_video_title.config(text=title)
+        self.tiktok_video_meta.config(text=f"Creator: @{uploader}  •  Duration: {duration}")
+
+    def _start_tiktok_download(self):
+        url = self.tiktok_url_var.get().strip()
+        dest = self.tiktok_dest_entry.get().strip()
+        if not url:
+            messagebox.showwarning("Warning", "Please enter a TikTok URL.")
+            return
+
+        choice = self.tiktok_mode_var.get()
+        ydl_opts = {
+            'outtmpl': os.path.join(dest, '%(title).100s_%(id)s.%(ext)s'),
+            'trim_file_name': 100,
+            'nocheckcertificate': True,
+        }
+
+        if choice == "audio":
+            ydl_opts['format'] = 'bestaudio/best'
+            ydl_opts['postprocessors'] = [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '320',
+            }]
+        elif choice == "wm":
+            ydl_opts['format'] = 'best[ext=mp4]/best'
+        else: # nowm
+            ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+            if self.has_ffmpeg:
+                ydl_opts['merge_output_format'] = 'mp4'
+
+        self._execute_ytdlp_download(url, ydl_opts, self.tiktok_btn, None)
+
+    # =============================================================
+    # Tab 3: Instagram Reels & Posts Downloader
+    # =============================================================
+    def _build_instagram_tab(self):
+        f = self.tab_ig
+        
+        # Section Header
+        tk.Label(f, text=self.t["ig_title"], font=("Segoe UI", 12, "bold"), bg=self.c_bg).pack(anchor="w")
+        tk.Label(f, text=self.t["ig_desc"], font=("Segoe UI", 9), bg=self.c_bg, fg=self.c_text_muted).pack(anchor="w", pady=(0, 10))
+
+        # URL Input
+        tk.Label(f, text=self.t["url_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w")
+        url_box = tk.Frame(f, bg=self.c_bg)
+        url_box.pack(fill="x", pady=(2, 10))
+
+        self.ig_url_var = tk.StringVar()
+        self.ig_url_entry = tk.Entry(url_box, textvariable=self.ig_url_var, font=("Consolas", 10), relief="solid", bd=1)
+        self.ig_url_entry.pack(side="left", fill="x", expand=True, ipady=5)
+
+        tk.Button(
+            url_box, text="📋 Paste", bg="#ffffff", fg=self.c_text_dark, relief="solid", bd=1,
+            command=lambda: self._paste_to_entry(self.ig_url_entry)
+        ).pack(side="left", padx=(6, 0), ipadx=6)
+
+        self.ig_analyze_btn = tk.Button(
+            url_box, text=f"🔍 {self.t['analyze']}", bg="#e1306c", fg="#ffffff", font=("Segoe UI", 9, "bold"),
+            relief="flat", cursor="hand2", command=lambda: self._start_analysis(self.ig_url_var.get(), self._on_ig_analyzed)
+        )
+        self.ig_analyze_btn.pack(side="left", padx=(6, 0), ipadx=10)
+
+        # Instagram Info Card
+        self.ig_info_card = tk.Frame(f, bg="#ffffff", relief="solid", bd=1, padx=12, pady=10)
+        self.ig_info_card.pack(fill="x", pady=(0, 10))
+
+        self.ig_thumb_lbl = tk.Label(self.ig_info_card, text="[Instagram]", bg="#e2e8f0", width=16, height=5)
+        self.ig_thumb_lbl.pack(side="left", padx=(0, 12))
+
+        info_text_frame = tk.Frame(self.ig_info_card, bg="#ffffff")
+        info_text_frame.pack(side="left", fill="both", expand=True)
+
+        self.ig_video_title = tk.Label(info_text_frame, text="No Instagram post analyzed yet", font=("Segoe UI", 10, "bold"), bg="#ffffff", wraplength=560, justify="left")
+        self.ig_video_title.pack(anchor="w")
+
+        self.ig_video_meta = tk.Label(info_text_frame, text="Account: -- • Type: Reels / Post", font=("Segoe UI", 9), bg="#ffffff", fg=self.c_text_muted)
+        self.ig_video_meta.pack(anchor="w", pady=(4, 0))
+
+        # Format Options
+        tk.Label(f, text=self.t["preset_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w", pady=(2, 2))
+        self.ig_mode_var = tk.StringVar(value="reels")
+        radio_box = tk.Frame(f, bg=self.c_bg)
+        radio_box.pack(fill="x", pady=(0, 10))
+
+        tk.Radiobutton(radio_box, text=self.t["ig_opt_reels"], variable=self.ig_mode_var, value="reels", bg=self.c_bg).pack(side="left", padx=(0, 16))
+        tk.Radiobutton(radio_box, text=self.t["ig_opt_audio"], variable=self.ig_mode_var, value="audio", bg=self.c_bg).pack(side="left")
+
+        # Destination Folder
+        dest_box = tk.Frame(f, bg=self.c_bg)
+        dest_box.pack(fill="x", pady=(0, 12))
+        tk.Label(dest_box, text=self.t["dest_label"], font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(anchor="w")
+        dest_in = tk.Frame(dest_box, bg=self.c_bg)
+        dest_in.pack(fill="x", pady=(2, 0))
+        self.ig_dest_entry = tk.Entry(dest_in, font=("Segoe UI", 9), relief="solid", bd=1)
+        self.ig_dest_entry.insert(0, os.path.expanduser("~/Downloads"))
+        self.ig_dest_entry.pack(side="left", fill="x", expand=True, ipady=4)
+        tk.Button(dest_in, text=f"📁 {self.t['browse']}", bg="#ffffff", fg=self.c_text_dark, relief="solid", bd=1,
+                  command=lambda: self._browse_folder(self.ig_dest_entry)).pack(side="left", padx=(6, 0), ipadx=8)
+
+        # Download Button
+        self.ig_btn = tk.Button(
+            f, text=f"📸 {self.t['download']} Instagram Reels (1080p)", bg="#e1306c", fg="#ffffff", font=("Segoe UI", 11, "bold"),
+            relief="flat", cursor="hand2", padx=20, pady=8, command=self._start_instagram_download
+        )
+        self.ig_btn.pack(fill="x")
+
+    def _on_ig_analyzed(self, info):
+        title = info.get("title", "Instagram Reel / Post")
+        uploader = info.get("uploader", info.get("uploader_id", "Instagram User"))
+        self.ig_video_title.config(text=title[:100])
+        self.ig_video_meta.config(text=f"Account: @{uploader}  •  Format: High Quality")
+
+    def _start_instagram_download(self):
+        url = self.ig_url_var.get().strip()
+        dest = self.ig_dest_entry.get().strip()
+        if not url:
+            messagebox.showwarning("Warning", "Please enter an Instagram URL.")
+            return
+
+        choice = self.ig_mode_var.get()
+        ydl_opts = {
+            'outtmpl': os.path.join(dest, '%(title).100s_%(id)s.%(ext)s'),
+            'trim_file_name': 100,
+            'nocheckcertificate': True,
+        }
+
+        if choice == "audio":
+            ydl_opts['format'] = 'bestaudio/best'
+            ydl_opts['postprocessors'] = [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '320',
+            }]
+        else:
+            ydl_opts['format'] = 'best[ext=mp4]/best'
+
+        self._execute_ytdlp_download(url, ydl_opts, self.ig_btn, None)
+
+    # =============================================================
+    # Tab 4: Facebook & Social Downloader
     # =============================================================
     def _build_facebook_tab(self):
         f = self.tab_fb
@@ -1007,7 +1311,245 @@ class MediaToolsProApp:
         self._execute_ytdlp_download(url, ydl_opts, self.aud_dl_btn)
 
     # =============================================================
-    # Tab 5: Video Frame Snapshot Extractor
+    # Tab 7: AI Image Background Remover Studio
+    # =============================================================
+    def _build_remove_bg_tab(self):
+        f = self.tab_bg
+        
+        # Section Header
+        tk.Label(f, text=self.t["bg_title"], font=("Segoe UI", 12, "bold"), bg=self.c_bg).pack(anchor="w")
+        tk.Label(f, text=self.t["bg_desc"], font=("Segoe UI", 9), bg=self.c_bg, fg=self.c_text_muted).pack(anchor="w", pady=(0, 8))
+
+        # Open File Bar
+        top_bar = tk.Frame(f, bg=self.c_bg)
+        top_bar.pack(fill="x", pady=(0, 8))
+
+        self.bg_file_entry = tk.Entry(top_bar, font=("Segoe UI", 9), relief="solid", bd=1)
+        self.bg_file_entry.pack(side="left", fill="x", expand=True, ipady=4)
+
+        tk.Button(
+            top_bar, text=f"📂 {self.t['bg_open_btn']}", bg="#0ea5e9", fg="#ffffff", font=("Segoe UI", 9, "bold"),
+            relief="flat", cursor="hand2", command=self._browse_bg_image
+        ).pack(side="left", padx=(8, 0), ipadx=10, ipady=3)
+
+        # Background Replacement Mode Options
+        opt_box = tk.Frame(f, bg=self.c_bg)
+        opt_box.pack(fill="x", pady=(0, 8))
+        tk.Label(opt_box, text="Backdrop Style:", font=("Segoe UI", 9, "bold"), bg=self.c_bg).pack(side="left", padx=(0, 10))
+
+        self.bg_mode_var = tk.StringVar(value="transparent")
+        tk.Radiobutton(opt_box, text=self.t["bg_mode_transparent"], variable=self.bg_mode_var, value="transparent", bg=self.c_bg, command=self._refresh_bg_preview).pack(side="left", padx=(0, 12))
+        tk.Radiobutton(opt_box, text=self.t["bg_mode_white"], variable=self.bg_mode_var, value="white", bg=self.c_bg, command=self._refresh_bg_preview).pack(side="left", padx=(0, 12))
+        tk.Radiobutton(opt_box, text=self.t["bg_mode_black"], variable=self.bg_mode_var, value="black", bg=self.c_bg, command=self._refresh_bg_preview).pack(side="left", padx=(0, 12))
+        tk.Radiobutton(opt_box, text=self.t["bg_mode_green"], variable=self.bg_mode_var, value="green", bg=self.c_bg, command=self._refresh_bg_preview).pack(side="left")
+
+        # Side-by-Side Preview Displays
+        preview_container = tk.Frame(f, bg=self.c_bg)
+        preview_container.pack(fill="both", expand=True, pady=(0, 8))
+
+        # Left: Original Image
+        left_box = tk.Frame(preview_container, bg="#ffffff", relief="solid", bd=1)
+        left_box.pack(side="left", fill="both", expand=True, padx=(0, 4))
+        
+        tk.Label(left_box, text="Original Photo", font=("Segoe UI", 9, "bold"), bg="#f1f5f9", fg=self.c_text_dark, pady=3).pack(fill="x")
+        self.bg_orig_lbl = tk.Label(left_box, text="[No Image Loaded]\nClick 'Open Source Image' to begin", bg="#ffffff", fg=self.c_text_muted)
+        self.bg_orig_lbl.pack(fill="both", expand=True, padx=8, pady=8)
+
+        # Right: Cutout / Processed Image
+        right_box = tk.Frame(preview_container, bg="#ffffff", relief="solid", bd=1)
+        right_box.pack(side="left", fill="both", expand=True, padx=(4, 0))
+        
+        tk.Label(right_box, text="Background Removed Cutout", font=("Segoe UI", 9, "bold"), bg="#f1f5f9", fg=self.c_text_dark, pady=3).pack(fill="x")
+        self.bg_result_lbl = tk.Label(right_box, text="[Cutout Preview]\nClick 'Remove Background' to generate", bg="#ffffff", fg=self.c_text_muted)
+        self.bg_result_lbl.pack(fill="both", expand=True, padx=8, pady=8)
+
+        # Action Buttons Row
+        action_bar = tk.Frame(f, bg=self.c_bg)
+        action_bar.pack(fill="x", pady=(2, 0))
+
+        self.bg_process_btn = tk.Button(
+            action_bar, text=f"✨ {self.t['bg_remove_btn']}", bg="#10b981", fg="#ffffff", font=("Segoe UI", 10, "bold"),
+            relief="flat", cursor="hand2", padx=16, pady=6, command=self._start_remove_bg_thread
+        )
+        self.bg_process_btn.pack(side="left", fill="x", expand=True, padx=(0, 6))
+
+        self.bg_save_btn = tk.Button(
+            action_bar, text=f"💾 {self.t['bg_save_btn']}", bg="#0ea5e9", fg="#ffffff", font=("Segoe UI", 10, "bold"),
+            relief="flat", cursor="hand2", padx=16, pady=6, command=self._save_remove_bg
+        )
+        self.bg_save_btn.pack(side="left", fill="x", expand=True, padx=(6, 0))
+
+    def _browse_bg_image(self):
+        if not Image:
+            messagebox.showerror("Error", "Pillow (PIL) library is required for image processing.")
+            return
+        
+        file_path = filedialog.askopenfilename(
+            title="Select Source Image",
+            filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.webp;*.bmp;*.avif"), ("All Files", "*.*")]
+        )
+        if not file_path:
+            return
+
+        self.bg_image_path = file_path
+        self.bg_file_entry.delete(0, tk.END)
+        self.bg_file_entry.insert(0, file_path)
+
+        try:
+            self.bg_orig_image = Image.open(file_path).convert("RGBA")
+            self.bg_processed_image = None
+            self._render_bg_original_preview()
+            self.bg_result_lbl.config(image="", text="[Ready to Process]\nClick 'Remove Background' to generate cutout")
+            self.log_message(f"📷 Loaded source image: {os.path.basename(file_path)} ({self.bg_orig_image.width}x{self.bg_orig_image.height})")
+            self._update_status(f"Loaded {os.path.basename(file_path)}", 0)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open image:\n{e}")
+
+    def _render_bg_original_preview(self):
+        if not self.bg_orig_image or not ImageTk:
+            return
+        
+        w, h = self.bg_orig_image.size
+        max_w, max_h = 320, 200
+        ratio = min(max_w / max(w, 1), max_h / max(h, 1))
+        new_size = (max(1, int(w * ratio)), max(1, int(h * ratio)))
+
+        resized = self.bg_orig_image.resize(new_size, Image.Resampling.LANCZOS)
+        self.bg_orig_preview_photo = ImageTk.PhotoImage(resized)
+        self.bg_orig_lbl.config(image=self.bg_orig_preview_photo, text="")
+
+    def _start_remove_bg_thread(self):
+        if not self.bg_orig_image:
+            messagebox.showwarning("Warning", "Please open an image first.")
+            return
+
+        self.bg_process_btn.config(state="disabled", text="⏳ Removing background...")
+        self._update_status("Removing image background with AI neural matting...", 30)
+        self.log_message("✨ Initiating background removal...")
+
+        def process_worker():
+            try:
+                # 1. Try rembg if installed
+                result_img = None
+                if rembg_remove is not None:
+                    try:
+                        self.log_message("🧠 Processing with Rembg U2Net model...")
+                        result_img = rembg_remove(self.bg_orig_image)
+                    except Exception as re:
+                        self.log_message(f"Notice: Rembg encountered an error: {re}. Falling back to edge matting.")
+
+                # 2. Fallback matting if rembg is unavailable
+                if result_img is None:
+                    self.log_message("🎨 Applying adaptive luminance/chroma matting...")
+                    img_rgba = self.bg_orig_image.copy().convert("RGBA")
+                    datas = img_rgba.getdata()
+                    
+                    # Detect corner background color
+                    corners = [datas[0], datas[img_rgba.width - 1], datas[-1], datas[-img_rgba.width]]
+                    avg_bg_r = sum(c[0] for c in corners) // 4
+                    avg_bg_g = sum(c[1] for c in corners) // 4
+                    avg_bg_b = sum(c[2] for c in corners) // 4
+
+                    new_data = []
+                    threshold = 42
+                    for item in datas:
+                        diff = abs(item[0] - avg_bg_r) + abs(item[1] - avg_bg_g) + abs(item[2] - avg_bg_b)
+                        if diff < threshold:
+                            new_data.append((item[0], item[1], item[2], 0))
+                        elif diff < threshold + 25:
+                            alpha = int(((diff - threshold) / 25.0) * 255)
+                            new_data.append((item[0], item[1], item[2], alpha))
+                        else:
+                            new_data.append(item)
+                    
+                    img_rgba.putdata(new_data)
+                    result_img = img_rgba
+
+                self.bg_processed_image = result_img
+                self.root.after(0, self._on_bg_remove_success)
+            except Exception as e:
+                self.root.after(0, lambda: self._on_bg_remove_error(str(e)))
+
+        threading.Thread(target=process_worker, daemon=True).start()
+
+    def _on_bg_remove_success(self):
+        self.bg_process_btn.config(state="normal", text=f"✨ {self.t['bg_remove_btn']}")
+        self._refresh_bg_preview()
+        self._update_status("Background removal completed!", 100)
+        self.log_message("✓ Background removal completed successfully.")
+
+    def _on_bg_remove_error(self, err_msg):
+        self.bg_process_btn.config(state="normal", text=f"✨ {self.t['bg_remove_btn']}")
+        self._update_status(f"Error removing background: {err_msg[:40]}", 0)
+        self.log_message(f"✗ Remove BG failed: {err_msg}")
+        messagebox.showerror("Error", f"Failed to remove background:\n{err_msg}")
+
+    def _get_composited_bg_image(self):
+        if not self.bg_processed_image:
+            return None
+        
+        mode = self.bg_mode_var.get()
+        if mode == "transparent":
+            return self.bg_processed_image
+
+        bg_colors = {
+            "white": (255, 255, 255, 255),
+            "black": (15, 23, 42, 255),
+            "green": (34, 197, 94, 255),
+        }
+        solid_color = bg_colors.get(mode, (255, 255, 255, 255))
+        
+        composite = Image.new("RGBA", self.bg_processed_image.size, solid_color)
+        composite.paste(self.bg_processed_image, (0, 0), self.bg_processed_image)
+        return composite
+
+    def _refresh_bg_preview(self):
+        if not self.bg_processed_image or not ImageTk:
+            return
+        
+        composite = self._get_composited_bg_image()
+        if not composite:
+            return
+
+        w, h = composite.size
+        max_w, max_h = 320, 200
+        ratio = min(max_w / max(w, 1), max_h / max(h, 1))
+        new_size = (max(1, int(w * ratio)), max(1, int(h * ratio)))
+
+        resized = composite.resize(new_size, Image.Resampling.LANCZOS)
+        self.bg_preview_photo = ImageTk.PhotoImage(resized)
+        self.bg_result_lbl.config(image=self.bg_preview_photo, text="")
+
+    def _save_remove_bg(self):
+        if not self.bg_processed_image:
+            messagebox.showwarning("Warning", "No processed image to save. Please run 'Remove Background' first.")
+            return
+
+        composite = self._get_composited_bg_image()
+        mode = self.bg_mode_var.get()
+        default_name = "cutout_transparent.png" if mode == "transparent" else f"cutout_{mode}.png"
+        
+        save_path = filedialog.asksaveasfilename(
+            title="Save Cutout Image",
+            initialfile=default_name,
+            filetypes=[("PNG Image (Lossless & Alpha)", "*.png"), ("JPEG Image", "*.jpg"), ("WebP Image", "*.webp")]
+        )
+        if not save_path:
+            return
+
+        try:
+            if save_path.lower().endswith((".jpg", ".jpeg")):
+                composite.convert("RGB").save(save_path, "JPEG", quality=95)
+            else:
+                composite.save(save_path)
+            self.log_message(f"💾 Saved cutout image to: {save_path}")
+            self._update_status(f"Saved: {os.path.basename(save_path)}", 100)
+            messagebox.showinfo("Success", f"Cutout image saved successfully!\n\nLocation: {save_path}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save image:\n{e}")
+
+    # =============================================================
+    # Tab 8: Video Frame Snapshot Extractor
     # =============================================================
     def _build_frame_tab(self):
         f = self.tab_frame

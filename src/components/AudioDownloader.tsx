@@ -3,7 +3,6 @@ import { Language, GlobalDownloadState } from '../types';
 import { translations } from '../translations';
 import { simulateDownloadWithMetrics } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
-import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   Music,
   Folder,
@@ -16,7 +15,6 @@ import {
   Clipboard,
   XCircle,
   Server,
-  Globe,
 } from 'lucide-react';
 
 interface AudioDownloaderProps {
@@ -30,7 +28,7 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
 }) => {
   const t = translations[lang];
 
-  const [url, setUrl] = useState<string>('https://www.youtube.com/watch?v=kJQP7kiw5Fk');
+  const [url, setUrl] = useState<string>('');
   const [downloadFolder, setDownloadFolder] = useState<string>('Downloads/Audio_Tracks');
   const [format, setFormat] = useState<'mp3' | 'wav' | 'm4a' | 'flac' | 'opus'>('mp3');
   const [bitrate, setBitrate] = useState<'320' | '256' | '192' | '128'>('320');
@@ -41,7 +39,6 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
   const [eta, setEta] = useState<string>('00:00');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
-  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const cancelFnRef = useRef<(() => void) | null>(null);
 
@@ -188,7 +185,7 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
 
         {/* Formats Grid */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
             {t.audioFormat}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -199,12 +196,12 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
                 onClick={() => setFormat(fmt)}
                 className={`py-2.5 px-3 rounded-2xl flex flex-col items-center justify-center gap-1 text-xs font-bold transition min-h-[50px] ${
                   format === fmt
-                    ? 'neu-pill-inset text-emerald-700 bg-[#e6edf5] font-extrabold shadow-inner'
-                    : 'neu-btn text-slate-700'
+                    ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-extrabold shadow-inner'
+                    : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500'
                 }`}
               >
                 <span className="uppercase">{fmt}</span>
-                <span className="text-[10px] font-normal text-slate-500">
+                <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400">
                   {fmt === 'wav' || fmt === 'flac' ? 'Lossless' : 'Compressed'}
                 </span>
               </button>
@@ -215,8 +212,8 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
         {/* Bitrate Selector & Destination */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5 text-slate-500" />
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+              <Sliders className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               {t.audioBitrate}
             </label>
             <div className="grid grid-cols-4 gap-2">
@@ -227,8 +224,8 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
                   onClick={() => setBitrate(b)}
                   className={`py-2 px-1 rounded-xl text-xs font-bold transition min-h-[42px] ${
                     bitrate === b
-                      ? 'neu-pill-inset text-emerald-700 bg-[#e6edf5] shadow-inner font-extrabold'
-                      : 'neu-btn text-slate-700'
+                      ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 shadow-inner font-extrabold'
+                      : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500'
                   }`}
                 >
                   {b}k
@@ -238,7 +235,7 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
               {t.destination}
             </label>
             <div className="flex gap-2">
@@ -247,7 +244,7 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
                 type="text"
                 value={downloadFolder}
                 onChange={(e) => setDownloadFolder(e.target.value)}
-                className="flex-1 neu-input px-3.5 py-2 text-xs sm:text-sm text-slate-800 placeholder-slate-400 font-mono min-h-[42px]"
+                className="flex-1 neu-input px-3.5 py-2 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 font-mono min-h-[42px]"
               />
               <button
                 id="audio-browse-btn"
@@ -258,9 +255,9 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
                   );
                   if (custom) setDownloadFolder(custom);
                 }}
-                className="neu-btn min-h-[42px] px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-emerald-600 transition flex items-center justify-center gap-1.5 shrink-0"
+                className="neu-btn min-h-[42px] px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition flex items-center justify-center gap-1.5 shrink-0"
               >
-                <Folder className="w-4 h-4 text-emerald-600" />
+                <Folder className="w-4 h-4 text-emerald-500" />
                 <span>{t.browse}</span>
               </button>
             </div>
@@ -268,7 +265,7 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
         </div>
 
         {/* Options */}
-        <div className="p-3.5 rounded-2xl neu-inset text-xs font-semibold text-slate-700">
+        <div className="p-3.5 rounded-2xl neu-inset text-xs font-semibold text-slate-700 dark:text-slate-200">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -359,17 +356,6 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
                 <Server className="w-4 h-4 text-emerald-600" />
                 <span className="hidden sm:inline">Direct Link</span>
               </a>
-
-              <button
-                type="button"
-                id="audio-mirrors-btn"
-                onClick={() => setShowAssistModal(true)}
-                className="py-3 px-4 neu-btn text-emerald-700 hover:text-emerald-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
-                title="Open Fast Mirrors & Download Options"
-              >
-                <Globe className="w-4 h-4 text-emerald-600" />
-                <span className="hidden sm:inline">Options</span>
-              </button>
             </>
           )}
 
@@ -387,17 +373,6 @@ export const AudioDownloader: React.FC<AudioDownloaderProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Download Assist & Mirror Options Modal */}
-      <DownloadAssistModal
-        isOpen={showAssistModal}
-        onClose={() => setShowAssistModal(false)}
-        lang={lang}
-        mediaUrl={url}
-        mediaTitle={`Audio_${format.toUpperCase()}_${bitrate}kbps`}
-        format={format}
-        quality={`${bitrate}kbps`}
-      />
     </div>
   );
 };

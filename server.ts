@@ -10,6 +10,15 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
+  // Direct script download route
+  app.get('/main.py', (req, res) => {
+    res.download(path.join(process.cwd(), 'main.py'), 'main.py');
+  });
+
+  app.get('/requirements.txt', (req, res) => {
+    res.download(path.join(process.cwd(), 'requirements.txt'), 'requirements.txt');
+  });
+
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
@@ -27,6 +36,7 @@ async function startServer() {
       let isYouTube = cleanUrl.includes('youtube.com') || cleanUrl.includes('youtu.be');
       let isFacebook = cleanUrl.includes('facebook.com') || cleanUrl.includes('fb.watch');
       let isTikTok = cleanUrl.includes('tiktok.com');
+      let isInstagram = cleanUrl.includes('instagram.com');
 
       let title = 'Online Media Stream';
       let author = 'Media Creator';
@@ -60,6 +70,10 @@ async function startServer() {
         title = 'TikTok Trending Video';
         author = 'TikTok Creator';
         thumbnail = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&auto=format&fit=crop&q=80';
+      } else if (isInstagram) {
+        title = cleanUrl.includes('/reel/') ? 'Instagram Reel HD Post' : 'Instagram Photo & Video Post';
+        author = 'Instagram Creator';
+        thumbnail = 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800&auto=format&fit=crop&q=80';
       }
 
       res.json({

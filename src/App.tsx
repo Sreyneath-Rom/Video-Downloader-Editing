@@ -3,38 +3,34 @@ import {
   ToolTab,
   Language,
   GlobalDownloadState,
-  UiMode,
   DesktopTheme,
   DownloadQueueTask,
 } from './types';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { YouTubeDownloader } from './components/YouTubeDownloader';
+import { TikTokDownloader } from './components/TikTokDownloader';
+import { InstagramDownloader } from './components/InstagramDownloader';
 import { FacebookDownloader } from './components/FacebookDownloader';
 import { PlaylistDownloader } from './components/PlaylistDownloader';
 import { AudioDownloader } from './components/AudioDownloader';
 import { VideoFrameExtractor } from './components/VideoFrameExtractor';
 import { AudioCutter } from './components/AudioCutter';
+import { ImageBackgroundRemover } from './components/ImageBackgroundRemover';
 import { ActivityLogs } from './components/ActivityLogs';
 import { GlobalStatusBar } from './components/GlobalStatusBar';
 import { DesktopWindowControls } from './components/DesktopWindowControls';
-import { QuickActionBar } from './components/QuickActionBar';
-import { DownloadAssistModal } from './components/DownloadAssistModal';
 import { CommandPaletteModal } from './components/CommandPaletteModal';
 import { DesktopDownloadQueueDock } from './components/DesktopDownloadQueueDock';
-import { DesktopMediaInspector } from './components/DesktopMediaInspector';
 import { logger } from './utils/logger';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ToolTab>('youtube');
   const [lang, setLang] = useState<Language>('en');
-  const [uiMode, setUiMode] = useState<UiMode>('desktop');
-  const [desktopTheme, setDesktopTheme] = useState<DesktopTheme>('dark_studio');
+  const [theme, setTheme] = useState<DesktopTheme>('dark_studio');
   const [logCount, setLogCount] = useState<number>(0);
-  const [assistModalOpen, setAssistModalOpen] = useState<boolean>(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [queueDockOpen, setQueueDockOpen] = useState<boolean>(false);
-  const [inspectorCollapsed, setInspectorCollapsed] = useState<boolean>(false);
   const [activeSampleUrl, setActiveSampleUrl] = useState<string>('');
 
   const [downloadTasks, setDownloadTasks] = useState<DownloadQueueTask[]>([
@@ -85,36 +81,12 @@ export const App: React.FC = () => {
     return () => unsub();
   }, []);
 
-  // Global Keyboard Shortcuts (⌘K for command palette, ⌘1-7 for tabs)
+  // Global Keyboard Shortcuts (⌘K for command search)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setCommandPaletteOpen((prev) => !prev);
-      }
-      if (e.metaKey || e.altKey) {
-        if (e.key === '1') {
-          e.preventDefault();
-          setActiveTab('youtube');
-        } else if (e.key === '2') {
-          e.preventDefault();
-          setActiveTab('facebook');
-        } else if (e.key === '3') {
-          e.preventDefault();
-          setActiveTab('playlist_youtube');
-        } else if (e.key === '4') {
-          e.preventDefault();
-          setActiveTab('audio_download');
-        } else if (e.key === '5') {
-          e.preventDefault();
-          setActiveTab('video_frame_extractor');
-        } else if (e.key === '6') {
-          e.preventDefault();
-          setActiveTab('audio_cutter');
-        } else if (e.key === '7') {
-          e.preventDefault();
-          setActiveTab('logs');
-        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -125,16 +97,8 @@ export const App: React.FC = () => {
     setLang((prev) => (prev === 'en' ? 'km' : 'en'));
   };
 
-  const toggleUiMode = () => {
-    setUiMode((prev) => {
-      const next = prev === 'web' ? 'desktop' : 'web';
-      if (next === 'web') {
-        setDesktopTheme('light_neumorphic');
-      } else {
-        setDesktopTheme('dark_studio');
-      }
-      return next;
-    });
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark_studio' ? 'light_neumorphic' : 'dark_studio'));
   };
 
   const updateGlobalState = (updated: Partial<GlobalDownloadState>) => {
@@ -182,6 +146,10 @@ export const App: React.FC = () => {
     setActiveSampleUrl(url);
     if (url.includes('playlist')) {
       setActiveTab('playlist_youtube');
+    } else if (url.includes('tiktok.com')) {
+      setActiveTab('tiktok');
+    } else if (url.includes('instagram.com')) {
+      setActiveTab('instagram');
     } else if (url.includes('facebook') || url.includes('fb.')) {
       setActiveTab('facebook');
     } else if (url.includes('youtube') || url.includes('youtu.be')) {
@@ -209,31 +177,37 @@ export const App: React.FC = () => {
     );
   };
 
-  // Determine root CSS theme class
-  const getThemeClass = () => {
-    if (uiMode === 'web') return 'theme-light-neumorphic bg-[#e6edf5] text-slate-800';
-    if (desktopTheme === 'dark_studio') return 'theme-dark-studio bg-[#0b0f17] text-slate-100';
-    if (desktopTheme === 'sequoia_slate') return 'theme-sequoia-slate bg-[#0f172a] text-slate-100';
-    return 'theme-light-neumorphic bg-[#e6edf5] text-slate-800';
-  };
+  const isDark = theme === 'dark_studio';
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
 
   return (
     <div
       id="app-root"
-      className={`min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-300 ${getThemeClass()} ${
-        lang === 'km' ? 'font-khmer' : 'font-sans'
-      }`}
+      className={`min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-300 ${
+        isDark ? 'dark theme-dark-studio bg-[#0b0f17] text-slate-100' : 'theme-light-neumorphic bg-[#e6edf5] text-slate-800'
+      } ${lang === 'km' ? 'font-khmer' : 'font-sans'}`}
     >
       {/* App Top Header */}
       <Header
         lang={lang}
         onToggleLang={toggleLanguage}
         activeTab={activeTab}
-        uiMode={uiMode}
-        onToggleUiMode={toggleUiMode}
+        onSelectTab={setActiveTab}
         onOpenLogs={() => setActiveTab('logs')}
-        onOpenAssistModal={() => setAssistModalOpen(true)}
         logCount={logCount}
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+        onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+        onToggleQueue={() => setQueueDockOpen((prev) => !prev)}
+        activeQueueCount={downloadTasks.filter((t) => t.status === 'downloading').length}
+        downloadState={downloadState}
       />
 
       {/* Main Studio Workspace Layout */}
@@ -249,26 +223,13 @@ export const App: React.FC = () => {
 
         {/* Main Content Stage */}
         <main className="flex-1 min-w-0 flex flex-col gap-3 sm:gap-4">
-          {/* Top Window / Desktop Studio Controls Ribbon */}
+          {/* Top Window Navigation Ribbon */}
           <DesktopWindowControls
             lang={lang}
             activeTab={activeTab}
-            uiMode={uiMode}
-            onToggleUiMode={toggleUiMode}
-            onOpenAssistModal={() => setAssistModalOpen(true)}
             onOpenCommandPalette={() => setCommandPaletteOpen(true)}
-            onToggleInspector={() => setInspectorCollapsed((prev) => !prev)}
             onToggleQueue={() => setQueueDockOpen((prev) => !prev)}
-            currentTheme={desktopTheme}
-            onSelectTheme={setDesktopTheme}
             activeQueueCount={downloadTasks.filter((t) => t.status === 'downloading').length}
-          />
-
-          {/* Quick Demo Sample Selector */}
-          <QuickActionBar
-            lang={lang}
-            activeTab={activeTab}
-            onSelectSample={handleSelectSample}
           />
 
           {/* Active Tool View Container */}
@@ -276,6 +237,20 @@ export const App: React.FC = () => {
             {activeTab === 'youtube' && (
               <YouTubeDownloader
                 key={activeSampleUrl || 'yt'}
+                lang={lang}
+                onUpdateGlobalState={updateGlobalState}
+              />
+            )}
+            {activeTab === 'tiktok' && (
+              <TikTokDownloader
+                key={activeSampleUrl || 'tiktok'}
+                lang={lang}
+                onUpdateGlobalState={updateGlobalState}
+              />
+            )}
+            {activeTab === 'instagram' && (
+              <InstagramDownloader
+                key={activeSampleUrl || 'ig'}
                 lang={lang}
                 onUpdateGlobalState={updateGlobalState}
               />
@@ -301,6 +276,9 @@ export const App: React.FC = () => {
                 onUpdateGlobalState={updateGlobalState}
               />
             )}
+            {activeTab === 'remove_bg' && (
+              <ImageBackgroundRemover lang={lang} />
+            )}
             {activeTab === 'video_frame_extractor' && (
               <VideoFrameExtractor lang={lang} />
             )}
@@ -308,23 +286,12 @@ export const App: React.FC = () => {
             {activeTab === 'logs' && <ActivityLogs lang={lang} />}
           </div>
         </main>
-
-        {/* Right Pro Media & Hardware Inspector (Desktop Studio Mode) */}
-        {uiMode === 'desktop' && (
-          <DesktopMediaInspector
-            lang={lang}
-            activeTab={activeTab}
-            isCollapsed={inspectorCollapsed}
-            onToggleCollapse={() => setInspectorCollapsed((prev) => !prev)}
-            onOpenAssistModal={() => setAssistModalOpen(true)}
-          />
-        )}
       </div>
 
       {/* Global Bottom Status & Download Metrics Bar */}
       <GlobalStatusBar state={downloadState} lang={lang} />
 
-      {/* Desktop Download Queue & Background Tasks Dock */}
+      {/* Download Tasks & Background Queue Dock */}
       <DesktopDownloadQueueDock
         lang={lang}
         tasks={downloadTasks}
@@ -342,21 +309,9 @@ export const App: React.FC = () => {
         lang={lang}
         onSelectTab={setActiveTab}
         onSelectSample={handleSelectSample}
-        onToggleTheme={setDesktopTheme}
-        currentTheme={desktopTheme}
+        onToggleTheme={(newTheme) => setTheme(newTheme)}
+        currentTheme={theme}
         onToggleLang={toggleLanguage}
-        onOpenAssistModal={() => setAssistModalOpen(true)}
-      />
-
-      {/* Download Options & Fast Stream Assist Modal */}
-      <DownloadAssistModal
-        isOpen={assistModalOpen}
-        onClose={() => setAssistModalOpen(false)}
-        lang={lang}
-        mediaUrl={activeSampleUrl || 'https://youtube.com/watch?v=4xDzrJKXOOY'}
-        mediaTitle="Universal_Stream_Direct"
-        format="mp4"
-        quality="1080p"
       />
 
       {/* App Footer */}

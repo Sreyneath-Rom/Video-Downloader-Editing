@@ -3,7 +3,6 @@ import { Language, PlaylistItem, GlobalDownloadState } from '../types';
 import { translations } from '../translations';
 import { fetchPlaylistInfo, triggerFileDownload } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
-import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   ListVideo,
   Folder,
@@ -21,7 +20,6 @@ import {
   XCircle,
   Check,
   Server,
-  Globe,
 } from 'lucide-react';
 
 interface PlaylistDownloaderProps {
@@ -35,7 +33,7 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
 }) => {
   const t = translations[lang];
 
-  const [url, setUrl] = useState<string>('https://www.youtube.com/playlist?list=PLrEnWoR732-BHrPp_AK4e50iPtMDJlE2e');
+  const [url, setUrl] = useState<string>('');
   const [destination, setDestination] = useState<string>('Downloads/YouTube_Playlists');
   const [items, setItems] = useState<PlaylistItem[]>([]);
   const [downloadMode, setDownloadMode] = useState<'video' | 'audio'>('video');
@@ -44,7 +42,6 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
   const [progress, setProgress] = useState<number>(0);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
-  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const cancelFlagRef = useRef<boolean>(false);
 
@@ -252,7 +249,7 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
         {/* Format Selector & Directory */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
               {t.format}
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -261,11 +258,11 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
                 onClick={() => setDownloadMode('video')}
                 className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition min-h-[44px] ${
                   downloadMode === 'video'
-                    ? 'neu-pill-inset text-purple-700 bg-[#e6edf5] shadow-inner'
-                    : 'neu-btn text-slate-700'
+                    ? 'neu-pill-inset text-purple-600 dark:text-purple-400 bg-[#e6edf5] dark:bg-[#0c121e] border-purple-500/30 shadow-inner'
+                    : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-purple-500'
                 }`}
               >
-                <Film className="w-4 h-4 text-purple-600" />
+                <Film className="w-4 h-4 text-purple-500" />
                 <span>Video MP4</span>
               </button>
 
@@ -274,18 +271,18 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
                 onClick={() => setDownloadMode('audio')}
                 className={`py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition min-h-[44px] ${
                   downloadMode === 'audio'
-                    ? 'neu-pill-inset text-purple-700 bg-[#e6edf5] shadow-inner'
-                    : 'neu-btn text-slate-700'
+                    ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 shadow-inner'
+                    : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500'
                 }`}
               >
-                <Music className="w-4 h-4 text-emerald-600" />
+                <Music className="w-4 h-4 text-emerald-500" />
                 <span>Audio MP3</span>
               </button>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
               {t.destination}
             </label>
             <div className="flex gap-2">
@@ -294,7 +291,7 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 font-mono min-h-[44px]"
+                className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 font-mono min-h-[44px]"
               />
               <button
                 id="playlist-browse-btn"
@@ -305,9 +302,9 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
                   );
                   if (custom) setDestination(custom);
                 }}
-                className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-emerald-600 transition flex items-center justify-center gap-1.5 shrink-0"
+                className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition flex items-center justify-center gap-1.5 shrink-0"
               >
-                <Folder className="w-4 h-4 text-emerald-600" />
+                <Folder className="w-4 h-4 text-emerald-500" />
                 <span>{t.browse}</span>
               </button>
             </div>
@@ -475,17 +472,6 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
                 <Server className="w-4 h-4 text-emerald-600" />
                 <span className="hidden sm:inline">Direct ZIP</span>
               </a>
-
-              <button
-                type="button"
-                id="playlist-mirrors-btn"
-                onClick={() => setShowAssistModal(true)}
-                className="py-3 px-4 neu-btn text-purple-700 hover:text-purple-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
-                title="Open Fast Mirrors & Download Options"
-              >
-                <Globe className="w-4 h-4 text-purple-600" />
-                <span className="hidden sm:inline">Options</span>
-              </button>
             </>
           )}
 
@@ -504,17 +490,6 @@ export const PlaylistDownloader: React.FC<PlaylistDownloaderProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Download Assist & Mirror Options Modal */}
-      <DownloadAssistModal
-        isOpen={showAssistModal}
-        onClose={() => setShowAssistModal(false)}
-        lang={lang}
-        mediaUrl={url}
-        mediaTitle={`Playlist_Archive_${selectedCount || 1}_Tracks`}
-        format="zip"
-        quality="Batch"
-      />
     </div>
   );
 };

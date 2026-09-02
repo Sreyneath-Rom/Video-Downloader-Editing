@@ -358,7 +358,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={() => document.getElementById('audio-file-input')?.click()}
-          className="border-2 border-dashed border-slate-300/80 hover:border-emerald-500 neu-inset rounded-2xl p-8 sm:p-12 text-center transition cursor-pointer group bg-[#e6edf5]/50"
+          className="border-2 border-dashed border-slate-300/80 dark:border-slate-700/80 hover:border-emerald-500 dark:hover:border-emerald-400 neu-inset rounded-2xl p-8 sm:p-12 text-center transition cursor-pointer group bg-[#e6edf5]/50 dark:bg-[#0c121e]"
         >
           <input
             id="audio-file-input"
@@ -367,13 +367,13 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
             onChange={handleFileInput}
             className="hidden"
           />
-          <div className="w-16 h-16 rounded-2xl neu-card-sm text-emerald-600 mx-auto flex items-center justify-center mb-4 group-hover:scale-105 transition bg-[#e6edf5]">
+          <div className="w-16 h-16 rounded-2xl neu-card-sm text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center mb-4 group-hover:scale-105 transition bg-[#e6edf5] dark:bg-[#111827]">
             {loading ? <Loader2 className="w-8 h-8 animate-spin" /> : <Music className="w-8 h-8" />}
           </div>
-          <h3 className="text-base font-bold text-slate-800 mb-1">
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 mb-1">
             {loading ? 'Decoding Audio...' : t.dropAudioHere}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium mb-4">
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium mb-4">
             Supports MP3, WAV, OGG, AAC, FLAC, and M4A audio tracks.
           </p>
 
@@ -383,7 +383,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
               e.stopPropagation();
               handleLoadDemoAudio();
             }}
-            className="neu-btn px-4 py-2 text-xs font-bold text-emerald-700 hover:text-emerald-900 rounded-xl inline-flex items-center gap-2 bg-emerald-50/50"
+            className="neu-btn px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 rounded-xl inline-flex items-center gap-2"
           >
             <Music className="w-3.5 h-3.5" />
             <span>Load Demo Audio Track (15s Synth)</span>
@@ -394,14 +394,14 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
           {/* File summary & Change Button */}
           <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl neu-inset text-xs">
             <div className="flex items-center gap-2.5 min-w-0">
-              <Volume2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="font-bold text-slate-800 truncate">{audioFile.name}</span>
-              <span className="text-slate-500 font-mono font-medium">({formatSecondsToTime(duration)})</span>
+              <Volume2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="font-bold text-slate-800 dark:text-slate-100 truncate">{audioFile.name}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-mono font-medium">({formatSecondsToTime(duration)})</span>
             </div>
             <button
               id="change-audio-btn"
               onClick={() => document.getElementById('change-audio-input')?.click()}
-              className="px-3.5 py-1.5 neu-btn text-slate-700 hover:text-emerald-600 rounded-xl font-bold transition shrink-0"
+              className="px-3.5 py-1.5 neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500 rounded-xl font-bold transition shrink-0"
             >
               Change File
             </button>
@@ -416,9 +416,9 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
 
           {/* Interactive Waveform Canvas */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-600 font-semibold">
-              <span className="font-bold text-slate-700">{t.audioWaveform}</span>
-              <span className="text-slate-500 font-normal">Click waveform to set start / end markers</span>
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 font-semibold">
+              <span className="font-bold text-slate-700 dark:text-slate-200">{t.audioWaveform}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-normal">Click waveform to set start / end markers</span>
             </div>
             <div className="rounded-2xl overflow-hidden neu-inset p-2 relative">
               <canvas
@@ -429,9 +429,9 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                 className="w-full h-28 cursor-pointer rounded-xl neu-card-sm"
               />
             </div>
-            <div className="flex justify-between text-[11px] font-mono text-slate-500 font-medium">
+            <div className="flex justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium">
               <span>00:00:00</span>
-              <span className="neu-pill-inset px-2.5 py-0.5 text-emerald-700 font-bold">
+              <span className="neu-pill-inset px-2.5 py-0.5 text-emerald-600 dark:text-emerald-400 font-bold">
                 Selected: {formatSecondsToTime(Math.max(0, endTime - startTime))}
               </span>
               <span>{formatSecondsToTime(duration)}</span>
@@ -444,7 +444,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
               id="cutter-play-btn"
               onClick={playSelection}
               disabled={isPlaying}
-              className="px-5 py-2.5 neu-btn text-emerald-700 hover:text-emerald-900 disabled:opacity-50 font-bold rounded-xl text-xs flex items-center gap-2 transition"
+              className="px-5 py-2.5 neu-btn text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 disabled:opacity-50 font-bold rounded-xl text-xs flex items-center gap-2 transition"
             >
               <Play className="w-4 h-4 fill-current" />
               {t.playSelection}
@@ -453,7 +453,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
               id="cutter-stop-btn"
               onClick={stopAudio}
               disabled={!isPlaying}
-              className="px-5 py-2.5 neu-btn text-slate-700 hover:text-red-500 disabled:opacity-50 font-bold rounded-xl text-xs flex items-center gap-2 transition"
+              className="px-5 py-2.5 neu-btn text-slate-700 dark:text-slate-300 hover:text-red-500 disabled:opacity-50 font-bold rounded-xl text-xs flex items-center gap-2 transition"
             >
               <Square className="w-4 h-4 fill-current" />
               {t.stopAudio}
@@ -463,8 +463,8 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
               onClick={() => setIsLooping(!isLooping)}
               className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition ${
                 isLooping
-                  ? 'neu-pill-inset text-emerald-700 font-extrabold'
-                  : 'neu-btn text-slate-600 hover:text-slate-900'
+                  ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-extrabold'
+                  : 'neu-btn text-slate-600 dark:text-slate-300 hover:text-slate-100'
               }`}
             >
               <Repeat className="w-4 h-4" />
@@ -475,7 +475,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
           {/* Time & Destination Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
                 {t.startTime}
               </label>
               <input
@@ -484,11 +484,11 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                 value={startTimeInput}
                 onChange={(e) => handleStartTimeChange(e.target.value)}
                 placeholder="00:00:00"
-                className="w-full neu-input px-4 py-3 text-sm text-slate-800 font-mono"
+                className="w-full neu-input px-4 py-3 text-sm text-slate-800 dark:text-slate-100 font-mono"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
                 {t.endTime}
               </label>
               <input
@@ -497,14 +497,14 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                 value={endTimeInput}
                 onChange={(e) => handleEndTimeChange(e.target.value)}
                 placeholder="00:00:30"
-                className="w-full neu-input px-4 py-3 text-sm text-slate-800 font-mono"
+                className="w-full neu-input px-4 py-3 text-sm text-slate-800 dark:text-slate-100 font-mono"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
                 Save Directory:
               </label>
               <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
@@ -513,7 +513,7 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                   type="text"
                   value={saveDir}
                   onChange={(e) => setSaveDir(e.target.value)}
-                  className="flex-1 neu-input px-4 py-3 text-sm text-slate-800 placeholder-slate-400 min-h-[44px]"
+                  className="flex-1 neu-input px-4 py-3 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 min-h-[44px]"
                 />
                 <button
                   id="cutter-browse-btn"
@@ -521,16 +521,16 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                     const custom = prompt('Enter save directory path:', saveDir);
                     if (custom) setSaveDir(custom);
                   }}
-                  className="neu-btn min-h-[44px] px-5 py-3 text-xs font-bold text-slate-700 hover:text-emerald-600 transition flex items-center justify-center gap-2 shrink-0"
+                  className="neu-btn min-h-[44px] px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition flex items-center justify-center gap-2 shrink-0"
                 >
-                  <Folder className="w-4 h-4 text-emerald-600" />
+                  <Folder className="w-4 h-4 text-emerald-500" />
                   <span>Browse Save</span>
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
                 {t.exportFormat}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -539,8 +539,8 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                   onClick={() => setExportFormat('wav')}
                   className={`min-h-[44px] py-3 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center ${
                     exportFormat === 'wav'
-                      ? 'neu-pill-inset text-emerald-700 font-extrabold'
-                      : 'neu-btn text-slate-600 hover:text-slate-900'
+                      ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-extrabold'
+                      : 'neu-btn text-slate-600 dark:text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   WAV (Lossless)
@@ -550,8 +550,8 @@ export const AudioCutter: React.FC<AudioCutterProps> = ({ lang }) => {
                   onClick={() => setExportFormat('mp3')}
                   className={`min-h-[44px] py-3 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center ${
                     exportFormat === 'mp3'
-                      ? 'neu-pill-inset text-emerald-700 font-extrabold'
-                      : 'neu-btn text-slate-600 hover:text-slate-900'
+                      ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-extrabold'
+                      : 'neu-btn text-slate-600 dark:text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   MP3 (Audio)

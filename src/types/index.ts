@@ -4,11 +4,14 @@ export type DesktopTheme = 'dark_studio' | 'sequoia_slate' | 'light_neumorphic';
 
 export type ToolTab = 
   | 'youtube'
+  | 'tiktok'
+  | 'instagram'
   | 'facebook'
   | 'playlist_youtube'
   | 'audio_download'
   | 'video_frame_extractor'
   | 'audio_cutter'
+  | 'remove_bg'
   | 'logs';
 
 export interface DownloadQueueTask {
@@ -23,7 +26,7 @@ export interface DownloadQueueTask {
   size: string;
   status: 'queued' | 'downloading' | 'processing' | 'completed' | 'paused' | 'failed';
   timestamp: string;
-  type: 'video' | 'audio' | 'playlist' | 'frame';
+  type: 'video' | 'audio' | 'playlist' | 'frame' | 'image';
 }
 
 export interface VideoInfo {
@@ -33,11 +36,15 @@ export interface VideoInfo {
   duration: string;
   author: string;
   views?: string;
+  likes?: string;
+  soundName?: string;
+  isNoWatermark?: boolean;
   formats: {
     quality: string;
     ext: string;
     size: string;
     url: string;
+    id?: string;
   }[];
 }
 
@@ -75,3 +82,4 @@ export interface GlobalDownloadState {
   statusText: string;
   activeItem?: string;
 }
+

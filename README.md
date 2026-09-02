@@ -96,12 +96,12 @@ The repository includes a modern standalone Python desktop application (`main.py
 - Python 3.8+
 - `ffmpeg` installed on your system PATH (`brew install ffmpeg` on macOS, `sudo apt install ffmpeg` on Linux, or from [ffmpeg.org](https://ffmpeg.org/) on Windows).
 
-#### Quickstart:
+#### Quick Start for main.py:
 ```bash
-# 1. Install Python packages
-pip install yt-dlp opencv-python pydub pillow
+# 1. Install dependencies
+pip install -r requirements.txt
 
-# 2. Launch the desktop GUI
+# 2. Run the desktop application
 python main.py
 ```
 
@@ -111,6 +111,7 @@ python main.py
 
 ```
 ├── main.py                    # Standalone Python Tkinter desktop application
+├── requirements.txt           # Python desktop dependencies (yt-dlp, opencv-python, pydub, pillow)
 ├── index.html                 # Web app HTML entry point
 ├── package.json               # Web app dependencies and scripts
 ├── vite.config.ts             # Vite configuration

@@ -4,7 +4,6 @@ import { translations } from '../translations';
 import { fetchFacebookInfo, simulateDownloadWithMetrics } from '../utils/mediaDownloader';
 import { logger } from '../utils/logger';
 import { FacebookIcon } from './icons';
-import { DownloadAssistModal } from './DownloadAssistModal';
 import {
   Folder,
   Download,
@@ -21,7 +20,6 @@ import {
   Film,
   Music,
   Server,
-  Globe,
 } from 'lucide-react';
 
 interface FacebookDownloaderProps {
@@ -35,7 +33,7 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
 }) => {
   const t = translations[lang];
 
-  const [url, setUrl] = useState<string>('https://www.facebook.com/watch/?v=1814072233111581');
+  const [url, setUrl] = useState<string>('');
   const [destination, setDestination] = useState<string>('Downloads/Facebook_Media');
   const [qualityMode, setQualityMode] = useState<'hd' | 'sd' | 'audio'>('hd');
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
@@ -46,7 +44,6 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
   const [eta, setEta] = useState<string>('00:00');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | 'info'>('info');
-  const [showAssistModal, setShowAssistModal] = useState<boolean>(false);
 
   const cancelFnRef = useRef<(() => void) | null>(null);
 
@@ -232,7 +229,7 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
 
         {/* Quality Mode Cards */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
             {t.quality}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -241,16 +238,16 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               onClick={() => setQualityMode('hd')}
               className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
                 qualityMode === 'hd'
-                  ? 'neu-pill-inset text-blue-700 bg-[#e6edf5] font-bold shadow-inner'
-                  : 'neu-btn text-slate-700'
+                  ? 'neu-pill-inset text-blue-600 dark:text-blue-400 bg-[#e6edf5] dark:bg-[#0c121e] border-blue-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-blue-500'
               }`}
             >
-              <div className="p-2 rounded-xl neu-card-sm text-blue-600">
+              <div className="p-2 rounded-xl neu-card-sm text-blue-500 shrink-0">
                 <Video className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-bold">{t.fbQualityHd}</div>
-                <div className="text-[10px] text-slate-500">Best 1080p MP4</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">Best 1080p MP4</div>
               </div>
             </button>
 
@@ -259,16 +256,16 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               onClick={() => setQualityMode('sd')}
               className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
                 qualityMode === 'sd'
-                  ? 'neu-pill-inset text-blue-700 bg-[#e6edf5] font-bold shadow-inner'
-                  : 'neu-btn text-slate-700'
+                  ? 'neu-pill-inset text-sky-600 dark:text-sky-400 bg-[#e6edf5] dark:bg-[#0c121e] border-sky-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-sky-500'
               }`}
             >
-              <div className="p-2 rounded-xl neu-card-sm text-sky-600">
+              <div className="p-2 rounded-xl neu-card-sm text-sky-600 shrink-0">
                 <Film className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-bold">{t.fbQualitySd}</div>
-                <div className="text-[10px] text-slate-500">Fast 720p MP4</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">Fast 720p MP4</div>
               </div>
             </button>
 
@@ -277,16 +274,16 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               onClick={() => setQualityMode('audio')}
               className={`p-3 rounded-2xl flex items-center gap-3 text-left transition ${
                 qualityMode === 'audio'
-                  ? 'neu-pill-inset text-blue-700 bg-[#e6edf5] font-bold shadow-inner'
-                  : 'neu-btn text-slate-700'
+                  ? 'neu-pill-inset text-emerald-600 dark:text-emerald-400 bg-[#e6edf5] dark:bg-[#0c121e] border-emerald-500/30 font-bold shadow-inner'
+                  : 'neu-btn text-slate-700 dark:text-slate-200 hover:text-emerald-500'
               }`}
             >
-              <div className="p-2 rounded-xl neu-card-sm text-emerald-600">
+              <div className="p-2 rounded-xl neu-card-sm text-emerald-600 shrink-0">
                 <Music className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-bold">{t.fbQualityAudio}</div>
-                <div className="text-[10px] text-slate-500">MP3 320kbps Audio</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400">MP3 320kbps Audio</div>
               </div>
             </button>
           </div>
@@ -294,7 +291,7 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
 
         {/* Destination Path Input */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
             {t.destination}
           </label>
           <div className="flex gap-2">
@@ -303,7 +300,7 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
               type="text"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 font-mono min-h-[44px]"
+              className="flex-1 neu-input px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 font-mono min-h-[44px]"
             />
             <button
               id="facebook-browse-btn"
@@ -314,9 +311,9 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
                 );
                 if (custom) setDestination(custom);
               }}
-              className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-emerald-600 transition flex items-center justify-center gap-1.5 shrink-0"
+              className="neu-btn min-h-[44px] px-3.5 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-500 transition flex items-center justify-center gap-1.5 shrink-0"
             >
-              <Folder className="w-4 h-4 text-emerald-600" />
+              <Folder className="w-4 h-4 text-emerald-500" />
               <span>{t.browse}</span>
             </button>
           </div>
@@ -431,17 +428,6 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
                 <Server className="w-4 h-4 text-emerald-600" />
                 <span className="hidden sm:inline">Direct Link</span>
               </a>
-
-              <button
-                type="button"
-                id="facebook-mirrors-btn"
-                onClick={() => setShowAssistModal(true)}
-                className="py-3 px-4 neu-btn text-blue-700 hover:text-blue-900 font-bold text-xs flex items-center gap-1.5 shrink-0"
-                title="Open Fast Mirrors & Download Options"
-              >
-                <Globe className="w-4 h-4 text-blue-600" />
-                <span className="hidden sm:inline">Options</span>
-              </button>
             </>
           )}
 
@@ -460,17 +446,6 @@ export const FacebookDownloader: React.FC<FacebookDownloaderProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Download Assist & Mirror Options Modal */}
-      <DownloadAssistModal
-        isOpen={showAssistModal}
-        onClose={() => setShowAssistModal(false)}
-        lang={lang}
-        mediaUrl={url}
-        mediaTitle={videoInfo?.title || 'Facebook_Media_Video'}
-        format={qualityMode === 'audio' ? 'mp3' : 'mp4'}
-        quality={qualityMode}
-      />
     </div>
   );
 };

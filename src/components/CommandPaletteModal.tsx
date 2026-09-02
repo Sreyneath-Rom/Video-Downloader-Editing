@@ -15,9 +15,7 @@ import {
   Layers,
   Check,
   X,
-  ExternalLink,
   Cpu,
-  Monitor,
 } from 'lucide-react';
 
 interface CommandPaletteModalProps {
@@ -26,10 +24,9 @@ interface CommandPaletteModalProps {
   lang: Language;
   onSelectTab: (tab: ToolTab) => void;
   onSelectSample: (url: string) => void;
-  onToggleTheme: (theme: DesktopTheme) => void;
-  currentTheme: DesktopTheme;
+  onToggleTheme?: (theme: DesktopTheme) => void;
+  currentTheme?: DesktopTheme;
   onToggleLang: () => void;
-  onOpenAssistModal: () => void;
 }
 
 export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
@@ -41,7 +38,6 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   onToggleTheme,
   currentTheme,
   onToggleLang,
-  onOpenAssistModal,
 }) => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -78,6 +74,28 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
       },
     },
     {
+      id: 'tool-tiktok',
+      title: lang === 'km' ? 'TikTok Downloader គ្មាន Watermark (Clean HD)' : 'TikTok HD No-Watermark Downloader',
+      category: 'MEDIA MODULES',
+      icon: Zap,
+      color: 'text-cyan-400',
+      action: () => {
+        onSelectTab('tiktok');
+        onClose();
+      },
+    },
+    {
+      id: 'tool-ig',
+      title: lang === 'km' ? 'Instagram Downloader (Reels & Posts 1080p)' : 'Instagram Reels & Media Downloader',
+      category: 'MEDIA MODULES',
+      icon: Film,
+      color: 'text-pink-500',
+      action: () => {
+        onSelectTab('instagram');
+        onClose();
+      },
+    },
+    {
       id: 'tool-fb',
       title: lang === 'km' ? 'Facebook, Reels & Instagram HD' : 'Facebook & Social Reels HD Downloader',
       category: 'MEDIA MODULES',
@@ -107,6 +125,17 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
       color: 'text-emerald-500',
       action: () => {
         onSelectTab('audio_download');
+        onClose();
+      },
+    },
+    {
+      id: 'tool-remove-bg',
+      title: lang === 'km' ? 'លុបផ្ទៃខាងក្រោយរូបភាព (AI BG Remover & Matting)' : 'AI Image Background Remover & Matting',
+      category: 'STUDIO UTILITIES',
+      icon: Sparkles,
+      color: 'text-emerald-400',
+      action: () => {
+        onSelectTab('remove_bg');
         onClose();
       },
     },
@@ -180,48 +209,26 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         onClose();
       },
     },
-    // Actions
-    {
-      id: 'action-mirrors',
-      title: 'Open Download Options & Fast Stream Mirrors Hub',
-      category: 'ACTIONS',
-      icon: ExternalLink,
-      color: 'text-purple-500',
-      action: () => {
-        onOpenAssistModal();
-        onClose();
-      },
-    },
+    // Theme & Language
     {
       id: 'theme-dark',
-      title: 'Switch Theme: Pro Dark Studio (Onyx & Cyan)',
+      title: 'Switch Theme: Dark Mode',
       category: 'THEME & APPEARANCE',
       icon: Moon,
       color: 'text-indigo-400',
       action: () => {
-        onToggleTheme('dark_studio');
-        onClose();
-      },
-    },
-    {
-      id: 'theme-sequoia',
-      title: 'Switch Theme: macOS Sequoia Slate Glass',
-      category: 'THEME & APPEARANCE',
-      icon: Monitor,
-      color: 'text-blue-400',
-      action: () => {
-        onToggleTheme('sequoia_slate');
+        if (onToggleTheme) onToggleTheme('dark_studio');
         onClose();
       },
     },
     {
       id: 'theme-light',
-      title: 'Switch Theme: Classic Neumorphic Studio Light',
+      title: 'Switch Theme: Light Mode',
       category: 'THEME & APPEARANCE',
       icon: Sun,
       color: 'text-amber-500',
       action: () => {
-        onToggleTheme('light_neumorphic');
+        if (onToggleTheme) onToggleTheme('light_neumorphic');
         onClose();
       },
     },
